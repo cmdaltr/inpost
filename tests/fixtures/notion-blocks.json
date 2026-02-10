@@ -1,0 +1,240 @@
+[
+  {
+    "object": "block",
+    "id": "block-1",
+    "type": "heading_1",
+    "heading_1": {
+      "rich_text": [
+        {
+          "type": "text",
+          "plain_text": "Introduction to AI",
+          "text": { "content": "Introduction to AI" },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "href": null
+        }
+      ],
+      "is_toggleable": false,
+      "color": "default"
+    },
+    "has_children": false
+  },
+  {
+    "object": "block",
+    "id": "block-2",
+    "type": "paragraph",
+    "paragraph": {
+      "rich_text": [
+        {
+          "type": "text",
+          "plain_text": "Artificial intelligence is transforming how we work. ",
+          "text": { "content": "Artificial intelligence is transforming how we work. " },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "href": null
+        },
+        {
+          "type": "text",
+          "plain_text": "Here's why it matters.",
+          "text": { "content": "Here's why it matters." },
+          "annotations": {
+            "bold": true,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "href": null
+        }
+      ],
+      "color": "default"
+    },
+    "has_children": false
+  },
+  {
+    "object": "block",
+    "id": "block-3",
+    "type": "bulleted_list_item",
+    "bulleted_list_item": {
+      "rich_text": [
+        {
+          "type": "text",
+          "plain_text": "Automates repetitive tasks",
+          "text": { "content": "Automates repetitive tasks" },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "href": null
+        }
+      ],
+      "color": "default"
+    },
+    "has_children": false
+  },
+  {
+    "object": "block",
+    "id": "block-4",
+    "type": "bulleted_list_item",
+    "bulleted_list_item": {
+      "rich_text": [
+        {
+          "type": "text",
+          "plain_text": "Enhances decision making",
+          "text": { "content": "Enhances decision making" },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "href": null
+        }
+      ],
+      "color": "default"
+    },
+    "has_children": false
+  },
+  {
+    "object": "block",
+    "id": "block-5",
+    "type": "quote",
+    "quote": {
+      "rich_text": [
+        {
+          "type": "text",
+          "plain_text": "AI is the new electricity.",
+          "text": { "content": "AI is the new electricity." },
+          "annotations": {
+            "bold": false,
+            "italic": true,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "href": null
+        }
+      ],
+      "color": "default"
+    },
+    "has_children": false
+  },
+  {
+    "object": "block",
+    "id": "block-6",
+    "type": "code",
+    "code": {
+      "rich_text": [
+        {
+          "type": "text",
+          "plain_text": "console.log('hello AI');",
+          "text": { "content": "console.log('hello AI');" },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "href": null
+        }
+      ],
+      "language": "javascript",
+      "caption": []
+    },
+    "has_children": false
+  },
+  {
+    "object": "block",
+    "id": "block-7",
+    "type": "divider",
+    "divider": {},
+    "has_children": false
+  },
+  {
+    "object": "block",
+    "id": "block-8",
+    "type": "heading_2",
+    "heading_2": {
+      "rich_text": [
+        {
+          "type": "text",
+          "plain_text": "Conclusion",
+          "text": { "content": "Conclusion" },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "href": null
+        }
+      ],
+      "is_toggleable": false,
+      "color": "default"
+    },
+    "has_children": false
+  },
+  {
+    "object": "block",
+    "id": "block-9",
+    "type": "paragraph",
+    "paragraph": {
+      "rich_text": [
+        {
+          "type": "text",
+          "plain_text": "Learn more at ",
+          "text": { "content": "Learn more at " },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "href": null
+        },
+        {
+          "type": "text",
+          "plain_text": "our website",
+          "text": { "content": "our website" },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "href": "https://example.com"
+        }
+      ],
+      "color": "default"
+    },
+    "has_children": false
+  }
+]

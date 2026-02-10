@@ -1,0 +1,22 @@
+import type { Tone } from '../../types/index.js';
+import type { AIProviderConfig } from '../ai/provider.js';
+
+export interface OrchestratorConfig {
+  notionToken: string;
+  notionDatabaseId: string;
+  aiConfig: AIProviderConfig;
+  defaultTone: Tone;
+  includeHooks: boolean;
+  includeHashtags: boolean;
+  isDryRun: boolean;
+  requireConfirmation: boolean;
+}
+
+export interface SchedulerConfig {
+  cron: string;
+  timezone: string;
+  runOnce: boolean;
+  notionToken: string;
+  notionDatabaseId: string;
+  aiConfig: AIProviderConfig;
+}
