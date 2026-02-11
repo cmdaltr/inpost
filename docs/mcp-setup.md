@@ -67,16 +67,29 @@ Once configured, you can use Claude Desktop to:
 You can then copy the generated content into PostForge for publishing:
 
 ```bash
-npx postforge publish --text "Your generated LinkedIn post"
+postforge publish "Your generated LinkedIn post"
 ```
 
 Or paste it directly into LinkedIn.
+
+## Alternative: Interactive Mode
+
+PostForge now includes a built-in interactive mode that provides similar refinement capabilities without needing MCP:
+
+```bash
+postforge transform "Your content" -i
+```
+
+This lets you:
+- View the generated post
+- Provide feedback (e.g., "make it shorter", "more casual")
+- Regenerate or accept the result
 
 ## Combining MCP + CLI
 
 The recommended workflow combines both:
 
-1. Use Claude Desktop + MCP for **interactive content refinement** (brainstorming hooks, trying tones, iterating)
+1. Use Claude Desktop + MCP **or** `postforge transform -i` for **interactive content refinement**
 2. Use the PostForge CLI for **automated batch processing** (pipeline mode for multiple posts)
 3. Use `postforge transform --save` to persist AI-generated content back to Notion
 

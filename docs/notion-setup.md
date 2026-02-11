@@ -61,7 +61,8 @@ This page will automatically list any subpages you add to it.
 
 1. Write a post as a page in the PostForge database
 2. Set **Status** to `Ready`
-3. Run `postforge pipeline` — this transforms the content and publishes to LinkedIn
+3. Run `postforge pipeline` — transforms content and publishes to LinkedIn
+4. Or use `postforge transform -i` for interactive refinement before publishing
 4. PostForge updates the page: Status → Published, adds LinkedIn URL and Published Date
 5. **To make the post public in Notion:** Move the page from the database to under your public blog page. The `/sub-pages` block will show it automatically.
 
@@ -79,8 +80,11 @@ PostForge Database (private)        Public Blog Page
 
 ```bash
 # Verify connection
-npx postforge status
+postforge status
 
 # Fetch ready posts
-npx postforge fetch --status Ready
+postforge fetch --status Ready
+
+# Transform content interactively
+postforge transform "Your blog content" -i
 ```

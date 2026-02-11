@@ -40,7 +40,7 @@ Approval for "Share on LinkedIn" may require review. For personal/testing use, i
 Run the auth command:
 
 ```bash
-npx postforge auth
+postforge auth
 ```
 
 This will:
@@ -60,10 +60,10 @@ This will:
 
 ```bash
 # Check authentication status
-npx postforge status
+postforge status
 
 # Test with a dry run (does not actually post)
-npx postforge publish --text "Hello from PostForge!" --dry-run
+postforge publish "Hello from PostForge!" --dry-run
 ```
 
 ## 7. Scopes Reference
