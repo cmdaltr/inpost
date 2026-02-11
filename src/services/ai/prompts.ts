@@ -131,4 +131,24 @@ ${content}
 
 Create ${count} distinct LinkedIn post variants.`,
   },
+
+  REFINE: {
+    system: `You are a LinkedIn content editor. Refine the given post based on user feedback.
+
+Rules:
+- Keep under ${maxLength} characters
+- Apply the user's feedback precisely
+- Maintain the core message unless asked to change it
+- Do NOT use markdown formatting
+- Output ONLY the refined post text, nothing else`,
+
+    user: (currentPost: string, feedback: string) =>
+      `Current post:
+${currentPost}
+
+User feedback:
+${feedback}
+
+Refine the post based on this feedback.`,
+  },
 } as const;

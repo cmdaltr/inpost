@@ -1,8 +1,11 @@
 import { Command } from 'commander';
 import chalk from 'chalk';
+import inquirer from 'inquirer';
 import { loadEnv } from '../../config/index.js';
 import { createTransformer } from '../services/ai/transformer.js';
 import { createNotionReader } from '../services/notion/reader.js';
+import { createAIClientFromEnv } from '../services/ai/provider.js';
+import { PROMPTS } from '../services/ai/prompts.js';
 import type { Tone, TransformOptions } from '../types/index.js';
 
 export function registerTransformCommand(program: Command): void {
@@ -16,6 +19,7 @@ export function registerTransformCommand(program: Command): void {
     .option('--hooks', 'Generate attention-grabbing hooks', false)
     .option('--hashtags', 'Auto-generate hashtags', false)
     .option('--thread', 'Split into LinkedIn thread format', false)
+    .option('-i, --interactive', 'Refine output with feedback loop', false)
     .option('--save', 'Save result back to Notion (requires --notion-id)', false)
     .option('--json', 'Output as JSON', false)
     .action(async (text, options) => {
@@ -108,6 +112,80 @@ export function registerTransformCommand(program: Command): void {
           `\n(${result.metadata.tokensUsed} tokens, ${result.metadata.processingTimeMs}ms)`,
         ),
       );
+
+      // Interactive feedback loop
+      if (options.interactive) {
+        let currentPost = result.summary;
+        const { client } = createAIClientFromEnv(env);
+
+        while (true) {
+          const { action } = await inquirer.prompt([
+            {
+              type: 'list',
+              name: 'action',
+              message: 'What would you like to do?',
+              choices: [
+                { name: 'Accept this version', value: 'accept' },
+                { name: 'Provide feedback to refine', value: 'feedback' },
+                { name: 'Regenerate from scratch', value: 'regenerate' },
+                { name: 'Cancel', value: 'cancel' },
+              ],
+            },
+          ]);
+
+          if (action === 'accept') {
+            result.summary = currentPost;
+            console.log(chalk.green('\n✓ Post accepted.\n'));
+            break;
+          }
+
+          if (action === 'cancel') {
+            console.log(chalk.yellow('\nCancelled.\n'));
+            return;
+          }
+
+          if (action === 'regenerate') {
+            console.log(chalk.dim('\nRegenerating...\n'));
+            const newResult = await transformer.transform(transformOptions);
+            currentPost = newResult.summary;
+            result.summary = currentPost;
+            console.log(chalk.bold('LinkedIn Post:\n'));
+            console.log(currentPost);
+            console.log(
+              chalk.dim(`\n(${newResult.metadata.tokensUsed} tokens)`),
+            );
+            continue;
+          }
+
+          if (action === 'feedback') {
+            const { feedback } = await inquirer.prompt([
+              {
+                type: 'input',
+                name: 'feedback',
+                message: 'Your feedback:',
+              },
+            ]);
+
+            if (!feedback.trim()) {
+              continue;
+            }
+
+            console.log(chalk.dim('\nRefining...\n'));
+
+            const response = await client.complete(
+              PROMPTS.REFINE.system,
+              PROMPTS.REFINE.user(currentPost, feedback),
+            );
+
+            currentPost = response.text;
+            result.summary = currentPost;
+
+            console.log(chalk.bold('LinkedIn Post:\n'));
+            console.log(currentPost);
+            console.log(chalk.dim(`\n(${response.tokensUsed} tokens)`));
+          }
+        }
+      }
 
       // Save to Notion if requested
       if (options.save && options.notionId) {

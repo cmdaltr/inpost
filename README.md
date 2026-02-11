@@ -84,8 +84,12 @@ postforge transform "Your content here"
 postforge transform --notion-id <id>
 postforge transform --file ./post.txt
 
+# Interactive mode - refine with feedback
+postforge transform "Your content" -i
+
 Options:
   -t, --tone <tone>     Tone (defaults to DEFAULT_TONE in .env)
+  -i, --interactive     Refine output with feedback loop
   --variants <count>    Number of variants to generate
   --hooks               Generate attention-grabbing hooks
   --hashtags            Auto-generate hashtags
@@ -93,6 +97,13 @@ Options:
   --save                Save result back to Notion (requires --notion-id)
   --json                Output as JSON
 ```
+
+**Interactive mode** lets you refine the output:
+1. View the generated post
+2. Choose: Accept, Provide feedback, Regenerate, or Cancel
+3. If feedback: describe changes (e.g., "make it shorter", "add a question")
+4. Review the refined version
+5. Repeat until satisfied
 
 ### Publish
 
