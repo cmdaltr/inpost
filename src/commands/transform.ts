@@ -23,6 +23,11 @@ export function registerTransformCommand(program: Command): void {
     .option('--save', 'Save result back to Notion (requires --notion-id)', false)
     .option('--json', 'Output as JSON', false)
     .action(async (text, options) => {
+      // Suppress verbose logs in interactive mode for cleaner output
+      if (options.interactive) {
+        process.env.LOG_LEVEL = 'silent';
+      }
+
       const env = loadEnv();
 
       // Resolve content from input source
@@ -64,7 +69,11 @@ export function registerTransformCommand(program: Command): void {
         tags,
       };
 
-      console.log(chalk.dim(`\nTransforming (${tone})...\n`));
+      if (options.interactive) {
+        console.log(chalk.cyan(`\n✨ Generating LinkedIn post (${tone} tone)...\n`));
+      } else {
+        console.log(chalk.dim(`\nTransforming (${tone})...\n`));
+      }
 
       const result = await transformer.transform(transformOptions);
 
@@ -107,18 +116,12 @@ export function registerTransformCommand(program: Command): void {
         });
       }
 
-      console.log(
-        chalk.dim(
-          `\n(${result.metadata.tokensUsed} tokens, ${result.metadata.processingTimeMs}ms)`,
-        ),
-      );
-
       // Interactive feedback loop
       if (options.interactive) {
         let currentPost = result.summary;
         const { client } = createAIClientFromEnv(env);
 
-        console.log(chalk.dim('Use ↑↓ arrows to select, Enter to confirm\n'));
+        console.log(chalk.dim('\nUse ↑↓ arrows to select, Enter to confirm\n'));
 
         while (true) {
           const { action } = await inquirer.prompt([
@@ -127,17 +130,17 @@ export function registerTransformCommand(program: Command): void {
               name: 'action',
               message: 'What would you like to do?',
               choices: [
-                { name: 'Accept this version', value: 'accept' },
-                { name: 'Provide feedback to refine', value: 'feedback' },
-                { name: 'Regenerate from scratch', value: 'regenerate' },
-                { name: 'Cancel', value: 'cancel' },
+                { name: '✓ Accept and continue', value: 'accept' },
+                { name: '✏️  Refine with feedback', value: 'feedback' },
+                { name: '🔄 Regenerate from scratch', value: 'regenerate' },
+                { name: '✗ Cancel', value: 'cancel' },
               ],
             },
           ]);
 
           if (action === 'accept') {
             result.summary = currentPost;
-            console.log(chalk.green('\n✓ Post accepted.\n'));
+            console.log(chalk.green('\n✓ Post accepted!\n'));
             break;
           }
 
@@ -147,15 +150,13 @@ export function registerTransformCommand(program: Command): void {
           }
 
           if (action === 'regenerate') {
-            console.log(chalk.dim('\nRegenerating...\n'));
+            console.log(chalk.cyan('\n🔄 Regenerating...\n'));
             const newResult = await transformer.transform(transformOptions);
             currentPost = newResult.summary;
             result.summary = currentPost;
             console.log(chalk.bold('LinkedIn Post:\n'));
             console.log(currentPost);
-            console.log(
-              chalk.dim(`\n(${newResult.metadata.tokensUsed} tokens)`),
-            );
+            console.log();
             continue;
           }
 
@@ -164,7 +165,7 @@ export function registerTransformCommand(program: Command): void {
               {
                 type: 'input',
                 name: 'feedback',
-                message: 'Your feedback:',
+                message: 'What changes would you like?',
               },
             ]);
 
@@ -172,7 +173,7 @@ export function registerTransformCommand(program: Command): void {
               continue;
             }
 
-            console.log(chalk.dim('\nRefining...\n'));
+            console.log(chalk.cyan('\n✏️  Refining...\n'));
 
             const response = await client.complete(
               PROMPTS.REFINE.system,
@@ -184,9 +185,16 @@ export function registerTransformCommand(program: Command): void {
 
             console.log(chalk.bold('LinkedIn Post:\n'));
             console.log(currentPost);
-            console.log(chalk.dim(`\n(${response.tokensUsed} tokens)`));
+            console.log();
           }
         }
+      } else {
+        // Only show stats in non-interactive mode
+        console.log(
+          chalk.dim(
+            `\n(${result.metadata.tokensUsed} tokens, ${result.metadata.processingTimeMs}ms)`,
+          ),
+        );
       }
 
       // Save to Notion if requested
