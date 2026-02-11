@@ -7,28 +7,18 @@ import type { Tone, TransformOptions } from '../types/index.js';
 
 export function registerTransformCommand(program: Command): void {
   program
-    .command('transform')
-    .description('Transform content using Claude AI')
+    .command('transform [text]')
+    .description('Transform content for LinkedIn')
     .option('--notion-id <id>', 'Fetch content from a Notion page')
-    .option('--text <string>', 'Provide text directly')
     .option('--file <path>', 'Read content from a file')
-    .option(
-      '--tone <tone>',
-      'Tone: professional | casual | authority | storytelling | educational',
-      'professional',
-    )
-    .option(
-      '--type <type>',
-      'Output type: summary | thread | hook | full',
-      'summary',
-    )
+    .option('-t, --tone <tone>', 'Tone (uses DEFAULT_TONE from .env if not set)')
     .option('--variants <count>', 'Number of variants to generate', '1')
     .option('--hooks', 'Generate attention-grabbing hooks', false)
     .option('--hashtags', 'Auto-generate hashtags', false)
     .option('--thread', 'Split into LinkedIn thread format', false)
     .option('--save', 'Save result back to Notion (requires --notion-id)', false)
-    .option('--output <format>', 'Output format: json | text', 'text')
-    .action(async (options) => {
+    .option('--json', 'Output as JSON', false)
+    .action(async (text, options) => {
       const env = loadEnv();
 
       // Resolve content from input source
@@ -43,24 +33,26 @@ export function registerTransformCommand(program: Command): void {
         const post = await reader.fetchPage(options.notionId);
         content = post.content;
         tags = post.tags;
-      } else if (options.text) {
-        content = options.text;
+      } else if (text) {
+        content = text;
       } else if (options.file) {
         const fs = await import('node:fs');
         content = fs.readFileSync(options.file, 'utf-8');
       } else {
         console.error(
-          chalk.red('Error: Provide --notion-id, --text, or --file'),
+          chalk.red('Error: Provide text, --notion-id, or --file'),
         );
         process.exit(1);
       }
 
       const transformer = createTransformer(env);
 
+      const tone = (options.tone || env.DEFAULT_TONE || 'professional') as Tone;
+
       const transformOptions: TransformOptions = {
         content,
-        tone: options.tone as Tone,
-        type: options.type as TransformOptions['type'],
+        tone,
+        type: 'summary',
         includeHooks: options.hooks,
         includeHashtags: options.hashtags,
         includeThread: options.thread,
@@ -68,11 +60,11 @@ export function registerTransformCommand(program: Command): void {
         tags,
       };
 
-      console.log(chalk.dim('\nTransforming content...\n'));
+      console.log(chalk.dim(`\nTransforming (${tone})...\n`));
 
       const result = await transformer.transform(transformOptions);
 
-      if (options.output === 'json') {
+      if (options.json) {
         console.log(JSON.stringify(result, null, 2));
         return;
       }

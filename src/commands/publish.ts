@@ -8,18 +8,13 @@ import { validatePostLength } from '../utils/validation.js';
 
 export function registerPublishCommand(program: Command): void {
   program
-    .command('publish')
+    .command('publish [text]')
     .description('Publish content to LinkedIn')
     .option('--notion-id <id>', 'Publish AI Summary from a Notion page')
-    .option('--text <string>', 'Publish text directly')
     .option('--dry-run', 'Preview without actually posting', false)
-    .option(
-      '--visibility <vis>',
-      'PUBLIC | CONNECTIONS',
-      'PUBLIC',
-    )
-    .option('--update-notion', 'Update Notion page after publishing', true)
-    .action(async (options) => {
+    .option('--connections', 'Limit visibility to connections only', false)
+    .option('--no-update-notion', 'Skip updating Notion page after publishing')
+    .action(async (textArg, options) => {
       const env = loadEnv();
 
       // Resolve text to publish
@@ -35,10 +30,10 @@ export function registerPublishCommand(program: Command): void {
         const post = await reader.fetchPage(options.notionId);
         // Use AI Summary if available, otherwise use raw content
         text = post.content;
-      } else if (options.text) {
-        text = options.text;
+      } else if (textArg) {
+        text = textArg;
       } else {
-        console.error(chalk.red('Error: Provide --notion-id or --text'));
+        console.error(chalk.red('Error: Provide text or --notion-id'));
         process.exit(1);
       }
 
@@ -54,11 +49,13 @@ export function registerPublishCommand(program: Command): void {
         process.exit(1);
       }
 
+      const visibility = options.connections ? 'CONNECTIONS' : 'PUBLIC';
+
       if (options.dryRun) {
         console.log(chalk.bold('\n[DRY RUN] Would publish:\n'));
         console.log(text);
         console.log(
-          chalk.dim(`\n(${text.length}/${validation.maxLength} characters, visibility: ${options.visibility})\n`),
+          chalk.dim(`\n(${text.length}/${validation.maxLength} characters, visibility: ${visibility})\n`),
         );
         return;
       }
@@ -69,7 +66,7 @@ export function registerPublishCommand(program: Command): void {
 
       const result = await publisher.publish({
         text,
-        visibility: options.visibility as 'PUBLIC' | 'CONNECTIONS',
+        visibility,
         isDryRun: false,
       });
 
