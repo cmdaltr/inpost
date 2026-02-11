@@ -118,6 +118,8 @@ export function registerTransformCommand(program: Command): void {
         let currentPost = result.summary;
         const { client } = createAIClientFromEnv(env);
 
+        console.log(chalk.dim('Use ↑↓ arrows to select, Enter to confirm\n'));
+
         while (true) {
           const { action } = await inquirer.prompt([
             {
