@@ -68,6 +68,7 @@ function extractRichText(
 
 export interface NotionReader {
   fetchByStatus(status: string, limit: number): Promise<NotionPost[]>;
+  fetchByTitle(title: string): Promise<NotionPost | null>;
   fetchPage(pageId: string): Promise<NotionPost>;
 }
 
@@ -116,6 +117,8 @@ export function createNotionReader(
       tone: extractSelect(page, cfg.toneProperty) as Tone | undefined,
       tags: extractMultiSelect(page, cfg.tagsProperty),
       linkedinUrl: extractUrl(page, cfg.linkedinUrlProperty),
+      aiSummary: extractRichText(page, cfg.aiSummaryProperty),
+      blogUrl: extractUrl(page, cfg.blogUrlProperty) || page.url,
     };
   }
 
@@ -125,18 +128,21 @@ export function createNotionReader(
 
       await notionLimiter.acquire();
       const response = await withRetry(() =>
-        client.dataSources.query({
-          data_source_id: databaseId,
-          filter: {
-            property: cfg.statusProperty,
-            select: { equals: status },
+        client.request({
+          path: `databases/${databaseId}/query`,
+          method: 'post',
+          body: {
+            filter: {
+              property: cfg.statusProperty,
+              select: { equals: status },
+            },
+            page_size: Math.min(limit, 100),
           },
-          page_size: Math.min(limit, 100),
         }),
-      );
+      ) as { results: unknown[] };
 
       const posts: NotionPost[] = [];
-      for (const page of response.results) {
+      for (const page of response.results as Record<string, unknown>[]) {
         if (!('properties' in page)) continue;
         const typedPage = page as PageObjectResponse;
         const blocks = await getPageBlocks(typedPage.id);
@@ -146,6 +152,35 @@ export function createNotionReader(
 
       log.info({ count: posts.length }, 'Fetched posts');
       return posts;
+    },
+
+    async fetchByTitle(title: string): Promise<NotionPost | null> {
+      log.info({ title }, 'Fetching page by title');
+
+      await notionLimiter.acquire();
+      const response = await withRetry(() =>
+        client.request({
+          path: `databases/${databaseId}/query`,
+          method: 'post',
+          body: {
+            filter: {
+              property: cfg.titleProperty,
+              title: { equals: title },
+            },
+            page_size: 1,
+          },
+        }),
+      ) as { results: Record<string, unknown>[] };
+
+      if (response.results.length === 0) {
+        return null;
+      }
+
+      const page = response.results[0] as PageObjectResponse;
+      const blocks = await getPageBlocks(page.id);
+      const content = blocksToMarkdown(blocks);
+
+      return pageToPost(page, content);
     },
 
     async fetchPage(pageId: string): Promise<NotionPost> {

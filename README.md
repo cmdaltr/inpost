@@ -36,15 +36,12 @@ PostForge fetches blog posts from Notion, transforms them into LinkedIn-optimize
 ## Quick Start
 
 ```bash
-# Install dependencies
-npm install
-
 # Copy and fill in your credentials
 cp .env.example .env
+# Edit .env with your API keys (see Configuration below)
 
-# Build and link globally
-npm run build
-npm link
+# Install, build, and link globally
+./setup.sh
 
 # Check your configuration
 postforge status

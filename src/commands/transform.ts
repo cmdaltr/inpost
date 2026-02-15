@@ -6,13 +6,17 @@ import { createTransformer } from '../services/ai/transformer.js';
 import { createNotionReader } from '../services/notion/reader.js';
 import { createAIClientFromEnv } from '../services/ai/provider.js';
 import { PROMPTS } from '../services/ai/prompts.js';
+import { setLogLevel } from '../utils/logger.js';
 import type { Tone, TransformOptions } from '../types/index.js';
 
 export function registerTransformCommand(program: Command): void {
   program
     .command('transform [text]')
     .description('Transform content for LinkedIn')
-    .option('--notion-id <id>', 'Fetch content from a Notion page')
+    .option('--notion-id <id>', 'Fetch content from a Notion page by ID')
+    .option('--notion-title <title>', 'Fetch content from a Notion page by title')
+    .option('--edit', 'Edit existing AI summary instead of creating new', false)
+    .option('--existing', 'Use existing AI summary directly (skip transformation)', false)
     .option('--file <path>', 'Read content from a file')
     .option('-t, --tone <tone>', 'Tone (uses DEFAULT_TONE from .env if not set)')
     .option('--variants <count>', 'Number of variants to generate', '1')
@@ -20,12 +24,13 @@ export function registerTransformCommand(program: Command): void {
     .option('--hashtags', 'Auto-generate hashtags', false)
     .option('--thread', 'Split into LinkedIn thread format', false)
     .option('-i, --interactive', 'Refine output with feedback loop', false)
-    .option('--save', 'Save result back to Notion (requires --notion-id)', false)
+    .option('--save', 'Save result back to Notion (requires --notion-id or --notion-title)', false)
     .option('--json', 'Output as JSON', false)
     .action(async (text, options) => {
       // Suppress verbose logs in interactive mode for cleaner output
       if (options.interactive) {
-        process.env.LOG_LEVEL = 'silent';
+        process.env.LOG_LEVEL = 'fatal';
+        setLogLevel('fatal');
       }
 
       const env = loadEnv();
@@ -33,15 +38,36 @@ export function registerTransformCommand(program: Command): void {
       // Resolve content from input source
       let content: string;
       let tags: string[] = [];
+      let notionPageId: string | undefined;
+      let existingAiSummary: string | undefined;
 
-      if (options.notionId) {
+      if (options.notionId || options.notionTitle) {
         const reader = createNotionReader(
           env.NOTION_API_TOKEN,
           env.NOTION_DATABASE_ID,
         );
-        const post = await reader.fetchPage(options.notionId);
+
+        let post;
+        if (options.notionId) {
+          notionPageId = options.notionId;
+          post = await reader.fetchPage(options.notionId);
+        } else {
+          post = await reader.fetchByTitle(options.notionTitle);
+          if (!post) {
+            console.error(chalk.red(`No page found with title: "${options.notionTitle}"`));
+            process.exit(1);
+          }
+          notionPageId = post.id;
+        }
+
         content = post.content;
         tags = post.tags;
+        existingAiSummary = post.aiSummary;
+
+        // If --edit flag is set and there's an existing summary, use it as the starting point
+        if (options.edit && existingAiSummary) {
+          content = existingAiSummary;
+        }
       } else if (text) {
         content = text;
       } else if (options.file) {
@@ -69,13 +95,26 @@ export function registerTransformCommand(program: Command): void {
         tags,
       };
 
-      if (options.interactive) {
-        console.log(chalk.cyan(`\n✨ Generating LinkedIn post (${tone} tone)...\n`));
-      } else {
-        console.log(chalk.dim(`\nTransforming (${tone})...\n`));
-      }
+      let result: import('../types/index.js').TransformResult;
 
-      const result = await transformer.transform(transformOptions);
+      // Use existing AI summary directly without transformation
+      if (options.existing && existingAiSummary) {
+        console.log(chalk.cyan('\n📄 Using existing AI summary...\n'));
+        result = {
+          summary: existingAiSummary,
+          metadata: { model: 'existing', tokensUsed: 0, processingTimeMs: 0 },
+        };
+      } else if (options.existing && !existingAiSummary) {
+        console.error(chalk.red('No existing AI summary found. Run without --existing to generate one.'));
+        process.exit(1);
+      } else {
+        if (options.interactive) {
+          console.log(chalk.cyan(`\n✨ Generating LinkedIn post (${tone} tone)...\n`));
+        } else {
+          console.log(chalk.dim(`\nTransforming (${tone})...\n`));
+        }
+        result = await transformer.transform(transformOptions);
+      }
 
       if (options.json) {
         console.log(JSON.stringify(result, null, 2));
@@ -126,12 +165,13 @@ export function registerTransformCommand(program: Command): void {
         while (true) {
           const { action } = await inquirer.prompt([
             {
-              type: 'list',
+              type: 'select',
               name: 'action',
               message: 'What would you like to do?',
               choices: [
                 { name: '✓ Accept and continue', value: 'accept' },
                 { name: '✏️  Refine with feedback', value: 'feedback' },
+                { name: '📝 Edit directly', value: 'edit' },
                 { name: '🔄 Regenerate from scratch', value: 'regenerate' },
                 { name: '✗ Cancel', value: 'cancel' },
               ],
@@ -157,6 +197,26 @@ export function registerTransformCommand(program: Command): void {
             console.log(chalk.bold('LinkedIn Post:\n'));
             console.log(currentPost);
             console.log();
+            continue;
+          }
+
+          if (action === 'edit') {
+            const { edited } = await inquirer.prompt([
+              {
+                type: 'editor',
+                name: 'edited',
+                message: 'Edit the post (save and close to continue)',
+                default: currentPost,
+              },
+            ]);
+
+            if (edited && edited.trim()) {
+              currentPost = edited.trim();
+              result.summary = currentPost;
+              console.log(chalk.bold('\nLinkedIn Post:\n'));
+              console.log(currentPost);
+              console.log();
+            }
             continue;
           }
 
@@ -198,15 +258,15 @@ export function registerTransformCommand(program: Command): void {
       }
 
       // Save to Notion if requested
-      if (options.save && options.notionId) {
+      if (options.save && notionPageId) {
         const { createNotionWriter } = await import(
           '../services/notion/writer.js'
         );
         const writer = createNotionWriter(env.NOTION_API_TOKEN);
-        await writer.updateAISummary(options.notionId, result.summary);
+        await writer.updateAISummary(notionPageId, result.summary);
         if (result.variants) {
           await writer.updateVariants(
-            options.notionId,
+            notionPageId,
             result.variants.join('\n\n---\n\n'),
           );
         }

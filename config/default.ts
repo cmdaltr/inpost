@@ -15,6 +15,7 @@ export const defaultConfig = {
     variantsProperty: 'Variants',
     errorLogProperty: 'Error Log',
     linkedinPostIdProperty: 'LinkedIn Post ID',
+    blogUrlProperty: 'Blog URL',
   },
   linkedin: {
     apiVersion: '202601',

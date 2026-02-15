@@ -20,3 +20,7 @@ export const logger = pino({
 export function createChildLogger(name: string) {
   return logger.child({ module: name });
 }
+
+export function setLogLevel(level: string) {
+  logger.level = level;
+}

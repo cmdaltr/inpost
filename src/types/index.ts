@@ -14,6 +14,8 @@ export interface NotionPost {
   tags: string[];
   linkedinUrl?: string;
   publishedDate?: string;
+  aiSummary?: string;
+  blogUrl?: string;
 }
 
 export interface TransformOptions {

@@ -14,8 +14,10 @@ export const envSchema = z
     GEMINI_API_KEY: z.string().optional(),
     ANTHROPIC_API_KEY: z.string().optional(),
     LOG_LEVEL: z
-      .enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal'])
-      .default('info'),
+      .string()
+      .optional()
+      .transform((val) => (val === undefined || val === '' ? 'info' : val))
+      .pipe(z.enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal'])),
     SCHEDULE_CRON: z.string().default('0 9 * * 1-5'),
     DEFAULT_TONE: z
       .enum(['professional', 'casual', 'authority', 'storytelling', 'educational'])
