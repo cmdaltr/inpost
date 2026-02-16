@@ -5,3 +5,5 @@ dist/
 .DS_Store
 coverage/
 .vitest/
+TODO.md
+postforge-guide.md
