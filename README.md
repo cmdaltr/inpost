@@ -1,8 +1,8 @@
-# PostForge
+# InPost
 
 Notion to LinkedIn publishing pipeline with AI-powered content transformation.
 
-PostForge fetches blog posts from Notion, transforms them into LinkedIn-optimized content using AI, and publishes them via the LinkedIn API — all from the command line.
+InPost fetches blog posts from Notion, transforms them into LinkedIn-optimized content using AI, and publishes them via the LinkedIn API — all from the command line.
 
 ## Features
 
@@ -44,45 +44,45 @@ cp .env.example .env
 ./setup.sh
 
 # Check your configuration
-postforge status
+inpost status
 
 # Authenticate with LinkedIn
-postforge auth
+inpost auth
 
 # Transform content
-postforge transform "Your blog content here"
+inpost transform "Your blog content here"
 
 # Transform with options
-postforge transform "Your content" --tone casual --hashtags
+inpost transform "Your content" --tone casual --hashtags
 
 # Publish to LinkedIn
-postforge publish "Your LinkedIn post text"
+inpost publish "Your LinkedIn post text"
 
 # Full pipeline: fetch → transform → publish
-postforge pipeline --dry-run
+inpost pipeline --dry-run
 ```
 
 ## Commands
 
 | Command | Description |
 |---------|-------------|
-| `postforge transform [text]` | Transform content for LinkedIn |
-| `postforge publish [text]` | Publish content to LinkedIn |
-| `postforge pipeline` | Full pipeline: fetch → transform → publish |
-| `postforge fetch` | Fetch posts from Notion by status |
-| `postforge auth` | Authenticate with LinkedIn via OAuth |
-| `postforge schedule` | Run pipeline on a cron schedule |
-| `postforge status` | Check configuration and connection status |
+| `inpost transform [text]` | Transform content for LinkedIn |
+| `inpost publish [text]` | Publish content to LinkedIn |
+| `inpost pipeline` | Full pipeline: fetch → transform → publish |
+| `inpost fetch` | Fetch posts from Notion by status |
+| `inpost auth` | Authenticate with LinkedIn via OAuth |
+| `inpost schedule` | Run pipeline on a cron schedule |
+| `inpost status` | Check configuration and connection status |
 
 ### Transform
 
 ```bash
-postforge transform "Your content here"
-postforge transform --notion-id <id>
-postforge transform --file ./post.txt
+inpost transform "Your content here"
+inpost transform --notion-id <id>
+inpost transform --file ./post.txt
 
 # Interactive mode - refine with feedback
-postforge transform "Your content" -i
+inpost transform "Your content" -i
 
 Options:
   -t, --tone <tone>     Tone (defaults to DEFAULT_TONE in .env)
@@ -105,8 +105,8 @@ Options:
 ### Publish
 
 ```bash
-postforge publish "Your LinkedIn post"
-postforge publish --notion-id <id>
+inpost publish "Your LinkedIn post"
+inpost publish --notion-id <id>
 
 Options:
   --dry-run             Preview without posting
@@ -117,8 +117,8 @@ Options:
 ### Pipeline
 
 ```bash
-postforge pipeline
-postforge pipeline --dry-run
+inpost pipeline
+inpost pipeline --dry-run
 
 Options:
   --status <value>      Notion status to fetch (default: "Ready")
@@ -156,7 +156,7 @@ SCHEDULE_CRON=0 9 * * 1-5
 
 ### AI Provider Priority
 
-PostForge auto-selects the AI provider based on available keys:
+InPost auto-selects the AI provider based on available keys:
 1. **Groq** (if `GROQ_API_KEY` set) — Fastest, best free tier
 2. **Gemini** (if `GEMINI_API_KEY` set) — Good free tier
 3. **Anthropic** (if `ANTHROPIC_API_KEY` set) — Highest quality, paid

@@ -56,7 +56,7 @@ export function registerPublishCommand(program: Command): void {
         } else {
           console.error(
             chalk.yellow(
-              'No AI Summary found. Run `postforge transform --notion-id <id> --save` first.',
+              'No AI Summary found. Run `inpost transform --notion-id <id> --save` first.',
             ),
           );
           text = post.content;

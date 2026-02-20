@@ -6,7 +6,7 @@
 2. Sign in with your LinkedIn account
 3. Navigate to **My Apps** → **Create App**
 4. Fill in:
-   - **App name**: PostForge (or your preferred name)
+   - **App name**: InPost (or your preferred name)
    - **LinkedIn Page**: Associate with your LinkedIn Page (you can create a test page if needed)
    - **Privacy policy URL**: Can use your website or a placeholder for testing
    - **App logo**: Optional
@@ -35,35 +35,35 @@ Approval for "Share on LinkedIn" may require review. For personal/testing use, i
    LINKEDIN_CLIENT_SECRET=your_client_secret
    ```
 
-## 4. Authenticate with PostForge
+## 4. Authenticate with InPost
 
 Run the auth command:
 
 ```bash
-postforge auth
+inpost auth
 ```
 
 This will:
 1. Start a local server on port 3456
 2. Open your browser to LinkedIn's authorization page
 3. After you grant access, exchange the code for an access token
-4. Store credentials securely in `~/.postforge/credentials.json`
+4. Store credentials securely in `~/.inpost/credentials.json`
 
 ## 5. Token Expiry
 
 - LinkedIn access tokens expire after **60 days**
-- PostForge stores the expiry date and warns you via `postforge status`
-- When the token expires, re-run `postforge auth`
+- InPost stores the expiry date and warns you via `inpost status`
+- When the token expires, re-run `inpost auth`
 - Standard LinkedIn apps do not support automatic token refresh
 
 ## 6. Verify Your Setup
 
 ```bash
 # Check authentication status
-postforge status
+inpost status
 
 # Test with a dry run (does not actually post)
-postforge publish "Hello from PostForge!" --dry-run
+inpost publish "Hello from InPost!" --dry-run
 ```
 
 ## 7. Scopes Reference
@@ -85,5 +85,5 @@ postforge publish "Hello from PostForge!" --dry-run
 - The URL must match exactly (including port and path)
 
 **Token expired**
-- Run `postforge auth` again to get a new token
+- Run `inpost auth` again to get a new token
 - Tokens last 60 days from issuance

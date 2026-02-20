@@ -14,7 +14,7 @@ export interface StoredCredentials {
 }
 
 function getCredentialsDir(): string {
-  return path.join(os.homedir(), '.postforge');
+  return path.join(os.homedir(), '.inpost');
 }
 
 function getCredentialsPath(): string {

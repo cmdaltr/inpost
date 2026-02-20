@@ -22,7 +22,7 @@ export function registerScheduleCommand(program: Command): void {
     .action(async (options) => {
       const env = loadEnv();
 
-      console.log(chalk.bold('\nPostForge Scheduler\n'));
+      console.log(chalk.bold('\nInPost Scheduler\n'));
       console.log(`  Cron:     ${options.cron}`);
       console.log(`  Timezone: ${options.timezone}`);
       console.log();

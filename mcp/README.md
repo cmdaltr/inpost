@@ -1,4 +1,4 @@
-# PostForge MCP Configuration
+# InPost MCP Configuration
 
 This directory contains example MCP (Model Context Protocol) configuration for using Claude Desktop with Notion.
 

@@ -15,7 +15,7 @@ export function registerStatusCommand(program: Command): void {
     .command('status')
     .description('Check configuration and connection status')
     .action(async () => {
-      console.log(chalk.bold('\nPostForge Status\n'));
+      console.log(chalk.bold('\nInPost Status\n'));
 
       const env = tryLoadEnv();
 
@@ -39,12 +39,12 @@ export function registerStatusCommand(program: Command): void {
       check(
         'LinkedIn Client ID',
         hasClientId,
-        hasClientId ? 'Configured' : 'Missing (run: postforge auth)',
+        hasClientId ? 'Configured' : 'Missing (run: inpost auth)',
       );
       check(
         'LinkedIn Client Secret',
         hasClientSecret,
-        hasClientSecret ? 'Configured' : 'Missing (run: postforge auth)',
+        hasClientSecret ? 'Configured' : 'Missing (run: inpost auth)',
       );
 
       // LinkedIn tokens
@@ -61,14 +61,14 @@ export function registerStatusCommand(program: Command): void {
           tokenOk,
           tokenOk
             ? `Valid (expires in ${daysLeft} days)`
-            : 'Expired (run: postforge auth)',
+            : 'Expired (run: inpost auth)',
         );
         check('LinkedIn Person URN', Boolean(creds.personUrn), creds.personUrn || 'Missing');
       } else {
         check(
           'LinkedIn Token',
           false,
-          'Not authenticated (run: postforge auth)',
+          'Not authenticated (run: inpost auth)',
         );
       }
 

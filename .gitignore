@@ -6,4 +6,4 @@ dist/
 coverage/
 .vitest/
 TODO.md
-postforge-guide.md
+inpost-guide.md

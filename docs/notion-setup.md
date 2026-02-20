@@ -4,7 +4,7 @@
 
 1. Go to [notion.so/my-integrations](https://www.notion.so/my-integrations)
 2. Click **New integration**
-3. Name it "PostForge"
+3. Name it "InPost"
 4. Select your workspace
 5. Under **Capabilities**, enable:
    - Read content
@@ -13,7 +13,7 @@
 7. Copy the **Internal Integration Secret** (starts with `ntn_`)
 8. Add it to your `.env` file as `NOTION_API_TOKEN`
 
-## 2. Create the PostForge Database
+## 2. Create the InPost Database
 
 Create a new database in Notion. This database stays **private** — do not share it publicly.
 
@@ -36,7 +36,7 @@ Add these properties (names are case-sensitive):
 
 1. Open the database page in Notion
 2. Click **⋯** (top right) → **Connections**
-3. Search for and select your "PostForge" integration
+3. Search for and select your "InPost" integration
 4. Confirm access
 
 ## 4. Get the Database ID
@@ -59,15 +59,15 @@ This page will automatically list any subpages you add to it.
 
 ## 6. Workflow
 
-1. Write a post as a page in the PostForge database
+1. Write a post as a page in the InPost database
 2. Set **Status** to `Ready`
-3. Run `postforge pipeline` — transforms content and publishes to LinkedIn
-4. Or use `postforge transform -i` for interactive refinement before publishing
-4. PostForge updates the page: Status → Published, adds LinkedIn URL and Published Date
+3. Run `inpost pipeline` — transforms content and publishes to LinkedIn
+4. Or use `inpost transform -i` for interactive refinement before publishing
+4. InPost updates the page: Status → Published, adds LinkedIn URL and Published Date
 5. **To make the post public in Notion:** Move the page from the database to under your public blog page. The `/sub-pages` block will show it automatically.
 
 ```
-PostForge Database (private)        Public Blog Page
+InPost Database (private)        Public Blog Page
 ┌─────────────────────────┐         ┌─────────────────────┐
 │ Draft Post 1            │         │ Blog                │
 │ Draft Post 2            │         │ ├── Published Post  │
@@ -80,11 +80,11 @@ PostForge Database (private)        Public Blog Page
 
 ```bash
 # Verify connection
-postforge status
+inpost status
 
 # Fetch ready posts
-postforge fetch --status Ready
+inpost fetch --status Ready
 
 # Transform content interactively
-postforge transform "Your blog content" -i
+inpost transform "Your blog content" -i
 ```

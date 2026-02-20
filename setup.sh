@@ -5,4 +5,4 @@ npm install
 npm run build
 npm link
 
-echo "Setup complete. Run 'postforge status' to verify your configuration."
+echo "Setup complete. Run 'inpost status' to verify your configuration."

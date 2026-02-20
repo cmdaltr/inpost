@@ -23,12 +23,12 @@ export function createLinkedInClient(): LinkedInClient {
     const creds = readCredentials();
     if (!creds) {
       throw new LinkedInAuthError(
-        'Not authenticated. Run "postforge auth" first.',
+        'Not authenticated. Run "inpost auth" first.',
       );
     }
     if (isTokenExpired(creds)) {
       throw new LinkedInAuthError(
-        'LinkedIn token has expired. Run "postforge auth" to re-authenticate.',
+        'LinkedIn token has expired. Run "inpost auth" to re-authenticate.',
       );
     }
     return creds;

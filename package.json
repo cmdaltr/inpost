@@ -1,10 +1,10 @@
 {
-  "name": "postforge",
+  "name": "inpost",
   "version": "0.1.0",
   "description": "Notion to LinkedIn publishing pipeline with AI-powered content transformation",
   "type": "module",
   "bin": {
-    "postforge": "./dist/src/index.js"
+    "inpost": "./dist/src/index.js"
   },
   "scripts": {
     "build": "tsc",

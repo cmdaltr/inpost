@@ -21,7 +21,7 @@ export function registerPipelineCommand(program: Command): void {
     .action(async (options) => {
       const env = loadEnv();
 
-      console.log(chalk.bold('\nPostForge Pipeline\n'));
+      console.log(chalk.bold('\nInPost Pipeline\n'));
 
       const orchestrator = createOrchestrator({
         notionToken: env.NOTION_API_TOKEN,

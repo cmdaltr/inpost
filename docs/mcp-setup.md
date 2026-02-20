@@ -1,6 +1,6 @@
 # MCP Setup Guide
 
-PostForge includes an MCP (Model Context Protocol) configuration for using Claude Desktop with Notion interactively. This is complementary to the CLI pipeline — the MCP workflow enables conversational content creation, while the CLI automates the publishing pipeline.
+InPost includes an MCP (Model Context Protocol) configuration for using Claude Desktop with Notion interactively. This is complementary to the CLI pipeline — the MCP workflow enables conversational content creation, while the CLI automates the publishing pipeline.
 
 ## Option 1: Notion's Hosted MCP (Recommended)
 
@@ -64,20 +64,20 @@ Once configured, you can use Claude Desktop to:
 5. **Create threads**: "Split this blog post into a LinkedIn thread"
 6. **Rewrite tone**: "Rewrite this in a more authoritative tone"
 
-You can then copy the generated content into PostForge for publishing:
+You can then copy the generated content into InPost for publishing:
 
 ```bash
-postforge publish "Your generated LinkedIn post"
+inpost publish "Your generated LinkedIn post"
 ```
 
 Or paste it directly into LinkedIn.
 
 ## Alternative: Interactive Mode
 
-PostForge now includes a built-in interactive mode that provides similar refinement capabilities without needing MCP:
+InPost now includes a built-in interactive mode that provides similar refinement capabilities without needing MCP:
 
 ```bash
-postforge transform "Your content" -i
+inpost transform "Your content" -i
 ```
 
 This lets you:
@@ -89,8 +89,8 @@ This lets you:
 
 The recommended workflow combines both:
 
-1. Use Claude Desktop + MCP **or** `postforge transform -i` for **interactive content refinement**
-2. Use the PostForge CLI for **automated batch processing** (pipeline mode for multiple posts)
-3. Use `postforge transform --save` to persist AI-generated content back to Notion
+1. Use Claude Desktop + MCP **or** `inpost transform -i` for **interactive content refinement**
+2. Use the InPost CLI for **automated batch processing** (pipeline mode for multiple posts)
+3. Use `inpost transform --save` to persist AI-generated content back to Notion
 
 This gives you the best of both worlds: conversational creativity and pipeline automation.

@@ -11,7 +11,7 @@ export function createProgram(): Command {
   const program = new Command();
 
   program
-    .name('postforge')
+    .name('inpost')
     .description(
       'Notion to LinkedIn publishing pipeline with AI-powered content transformation',
     )
