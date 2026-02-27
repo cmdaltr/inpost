@@ -243,21 +243,23 @@ In your GitHub repository, go to **Settings → Secrets and variables → Action
 
 Add the following secrets:
 
-| Secret name | Where to find the value |
-|---|---|
-| `NOTION_API_TOKEN` | Your `.env` file |
-| `NOTION_DATABASE_ID` | Your `.env` file |
-| `ANTHROPIC_API_KEY` | Your `.env` file — or use one of the alternatives below |
-| `LINKEDIN_CREDENTIALS` | The full JSON from `~/.inpost/credentials.json` (Step 1) |
+| Secret name | Required | Where to find the value |
+|---|---|---|
+| `NOTION_API_TOKEN` | Yes | Your `.env` file |
+| `NOTION_DATABASE_ID` | Yes | Your `.env` file |
+| `LINKEDIN_CREDENTIALS` | Yes | Full JSON from `~/.inpost/credentials.json` (Step 1) |
+| `ANTHROPIC_API_KEY` | One of these three | Your `.env` file |
+| `GEMINI_API_KEY` | One of these three | Your `.env` file |
+| `GROQ_API_KEY` | One of these three | Your `.env` file |
+| `DEFAULT_TONE` | No — defaults to `professional` | Your `.env` file |
+| `LOG_LEVEL` | No — defaults to `info` | Your `.env` file |
 
-**AI provider:** Only one API key is required. Add whichever you use:
-- `ANTHROPIC_API_KEY` — Claude (Anthropic)
-- `GEMINI_API_KEY` — Gemini (Google)
-- `GROQ_API_KEY` — Groq
+Only add the AI key for the provider you actually use. You do not need all three.
 
-**Optional secrets** (InPost will use defaults if omitted):
-- `DEFAULT_TONE` — e.g. `professional` (default)
-- `LOG_LEVEL` — e.g. `info` (default)
+**What you do NOT need to add** — these are only used by `inpost auth` to generate credentials and are not needed once `~/.inpost/credentials.json` exists:
+- `LINKEDIN_CLIENT_ID`
+- `LINKEDIN_CLIENT_SECRET`
+- `LINKEDIN_REDIRECT_URI`
 
 #### Step 3 — Create the workflow file
 
