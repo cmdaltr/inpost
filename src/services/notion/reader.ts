@@ -66,10 +66,18 @@ function extractRichText(
   return undefined;
 }
 
+export interface NotionPostSummary {
+  id: string;
+  title: string;
+  status: string;
+}
+
 export interface NotionReader {
   fetchByStatus(status: string, limit: number): Promise<NotionPost[]>;
   fetchByTitle(title: string): Promise<NotionPost | null>;
   fetchPage(pageId: string): Promise<NotionPost>;
+  listTitles(limit: number): Promise<NotionPostSummary[]>;
+  listStatuses(): Promise<string[]>;
 }
 
 export function createNotionReader(
@@ -195,6 +203,64 @@ export function createNotionReader(
       const content = blocksToMarkdown(blocks);
 
       return pageToPost(page, content);
+    },
+
+    async listTitles(limit: number): Promise<NotionPostSummary[]> {
+      log.info({ limit }, 'Listing all titles from Notion');
+
+      const summaries: NotionPostSummary[] = [];
+      let cursor: string | undefined;
+
+      do {
+        await notionLimiter.acquire();
+        const response = await withRetry(() =>
+          client.request({
+            path: `databases/${databaseId}/query`,
+            method: 'post',
+            body: {
+              sorts: [{ property: cfg.titleProperty, direction: 'ascending' }],
+              page_size: Math.min(limit - summaries.length, 100),
+              ...(cursor ? { start_cursor: cursor } : {}),
+            },
+          }),
+        ) as { results: unknown[]; has_more: boolean; next_cursor: string | null };
+
+        for (const page of response.results as Record<string, unknown>[]) {
+          if (!('properties' in page)) continue;
+          const typedPage = page as PageObjectResponse;
+          summaries.push({
+            id: typedPage.id,
+            title: extractTitle(typedPage),
+            status: extractSelect(typedPage, cfg.statusProperty) || 'Unknown',
+          });
+        }
+
+        cursor = response.has_more && summaries.length < limit
+          ? response.next_cursor ?? undefined
+          : undefined;
+      } while (cursor);
+
+      log.info({ count: summaries.length }, 'Listed titles');
+      return summaries;
+    },
+
+    async listStatuses(): Promise<string[]> {
+      log.info({}, 'Fetching available statuses from database schema');
+
+      await notionLimiter.acquire();
+      const db = await withRetry(() =>
+        client.databases.retrieve({ database_id: databaseId }),
+      );
+
+      if (!('properties' in db)) return [];
+
+      const properties = db.properties as Record<string, { type: string; select?: { options: { name: string }[] } }>;
+      const prop = properties[cfg.statusProperty];
+      if (prop?.type === 'select' && prop.select) {
+        return prop.select.options.map((o) => o.name);
+      }
+
+      return [];
     },
   };
 }

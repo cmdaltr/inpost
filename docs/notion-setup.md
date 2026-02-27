@@ -63,8 +63,56 @@ This page will automatically list any subpages you add to it.
 2. Set **Status** to `Ready`
 3. Run `inpost pipeline` — transforms content and publishes to LinkedIn
 4. Or use `inpost transform -i` for interactive refinement before publishing
-4. InPost updates the page: Status → Published, adds LinkedIn URL and Published Date
-5. **To make the post public in Notion:** Move the page from the database to under your public blog page. The `/sub-pages` block will show it automatically.
+5. InPost updates the page: Status → Published, adds LinkedIn URL and Published Date
+6. **To make the post public in Notion:** Move the page from the database to under your public blog page. The `/sub-pages` block will show it automatically.
+
+### Queuing posts for the scheduler
+
+The scheduler picks up every page with **Status = Ready** when it fires. To queue a post:
+
+1. Write your content in the InPost database
+2. Set **Status** to `Ready` — that's it
+
+To preview and refine the AI output before it goes live, use `transform` first:
+
+```bash
+# Generate, review interactively, save AI Summary — but don't publish yet
+inpost transform --notion-title "My Post Title" -i --save
+# Then set Status = Ready in Notion when satisfied
+```
+
+The scheduler will re-transform from the page body when it runs. If you want to lock in the version you approved, this re-transformation is the one limitation to be aware of.
+
+## 7. Scheduler
+
+Run the pipeline automatically on a recurring schedule:
+
+```bash
+# Start the scheduler (default: every Monday at 11:00 Europe/London)
+inpost schedule
+
+# Custom schedule
+inpost schedule --cron "0 11 * * 1" --timezone "America/New_York"
+
+# Test by running once immediately
+inpost schedule --once
+```
+
+When the scheduler fires, it:
+
+1. Fetches up to 5 pages with **Status = Ready**
+2. Transforms each one with AI and saves the result to **AI Summary**
+3. Publishes to LinkedIn
+4. Updates the page: **Status → Published**, writes the LinkedIn URL and post ID
+
+Failed posts are marked **Error** with a message in the **Error Log** field.
+
+To keep the scheduler running persistently, use a process manager like `pm2`:
+
+```bash
+pm2 start "inpost schedule" --name inpost
+pm2 save
+```
 
 ```
 InPost Database (private)        Public Blog Page
@@ -76,7 +124,7 @@ InPost Database (private)        Public Blog Page
 └─────────────────────────┘         └─────────────────────┘
 ```
 
-## 7. Test Your Setup
+## 8. Test Your Setup
 
 ```bash
 # Verify connection

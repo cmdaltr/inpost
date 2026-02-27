@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.inpost.schedule</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <!-- Replace with the output of: which node -->
+        <string>/opt/homebrew/bin/node</string>
+        <!-- Replace with the absolute path to this repo -->
+        <string>/Users/YOURUSERNAME/path/to/inpost/dist/src/index.js</string>
+        <string>schedule</string>
+    </array>
+
+    <!-- Must point to the repo root so dotenv finds .env -->
+    <key>WorkingDirectory</key>
+    <string>/Users/YOURUSERNAME/path/to/inpost</string>
+
+    <!-- Start automatically when loaded, restart if it crashes -->
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>/Users/YOURUSERNAME/Library/Logs/inpost.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/YOURUSERNAME/Library/Logs/inpost.error.log</string>
+</dict>
+</plist>
