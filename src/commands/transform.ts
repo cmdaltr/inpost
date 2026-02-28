@@ -8,6 +8,7 @@ import { createAIClientFromEnv } from '../services/ai/provider.js';
 import { PROMPTS } from '../services/ai/prompts.js';
 import { setLogLevel } from '../utils/logger.js';
 import { resolveNote } from '../services/notes/NoteProviderFactory.js';
+import { printCommandHelp } from '../utils/help.js';
 import type { NoteProvider } from '../services/notes/NoteProvider.js';
 import type { Tone, TransformOptions } from '../types/index.js';
 
@@ -15,6 +16,14 @@ export function registerTransformCommand(program: Command): void {
   program
     .command('transform [text]')
     .description('Transform content for LinkedIn')
+    // ── Generic notebook shorthand ───────────────────────────────────────────
+    .option('--notebook <provider>', 'Notebook provider (overrides DEFAULT_NOTEBOOK): notion | onenote | obsidian | evernote')
+    .option('--notion', 'Shorthand for --notebook notion', false)
+    .option('--onenote', 'Shorthand for --notebook onenote', false)
+    .option('--obsidian', 'Shorthand for --notebook obsidian', false)
+    .option('--evernote', 'Shorthand for --notebook evernote', false)
+    .option('--title <title>', 'Note title — used with --notebook/provider flag as shorthand for --<provider>-title')
+    .option('--id <id>', 'Note ID — used with --notebook/provider flag as shorthand for --<provider>-id')
     // ── Notion ──────────────────────────────────────────────────────────────
     .option('--notion-id <id>', 'Fetch content from a Notion page by ID')
     .option('--notion-title <title>', 'Fetch content from a Notion page by title')
@@ -40,12 +49,83 @@ export function registerTransformCommand(program: Command): void {
     .option('--save', 'Save result back to the source note', false)
     .option('--json', 'Output as JSON', false)
     .action(async (text, options) => {
+      if (text === '?') {
+        printCommandHelp({
+          command: 'transform [text]',
+          summary: 'Transform a note or text into a LinkedIn-ready post using AI.',
+          sections: [
+            {
+              heading: 'Source',
+              options: [
+                { flag: '--notebook <provider>', description: 'notion | onenote | obsidian | evernote', default: 'notion' },
+                { flag: '--notion | --obsidian | --onenote | --evernote', description: 'Provider shorthands (combine with --title)' },
+                { flag: '--title <title>', description: 'Note title — use with a provider flag' },
+                { flag: '--notion-title <title>', description: 'Fetch from Notion by title' },
+                { flag: '--obsidian-title <title>', description: 'Fetch from Obsidian by title' },
+                { flag: '--onenote-title <title>', description: 'Fetch from OneNote by title' },
+                { flag: '--evernote-title <title>', description: 'Fetch from Evernote by title' },
+                { flag: '--file <path>', description: 'Read content from a local file' },
+              ],
+            },
+            {
+              heading: 'AI options',
+              options: [
+                { flag: '-t, --tone <tone>', description: 'professional|casual|authority|storytelling|educational', default: 'professional' },
+                { flag: '--hooks', description: 'Generate attention-grabbing hook options' },
+                { flag: '--hashtags', description: 'Auto-generate hashtags' },
+                { flag: '--thread', description: 'Split into LinkedIn thread format' },
+                { flag: '--variants <count>', description: 'Generate N alternative versions', default: '1' },
+              ],
+            },
+            {
+              heading: 'Workflow',
+              options: [
+                { flag: '-i, --interactive', description: 'Refine output with feedback loop (select ? in menu for help)' },
+                { flag: '--save', description: 'Save result back to the source notebook' },
+                { flag: '--existing', description: 'Use existing AI summary — skip regeneration' },
+                { flag: '--edit', description: 'Edit existing AI summary as the starting input' },
+              ],
+            },
+          ],
+          examples: [
+            'inpost transform --notion-title "My Post" -i --save',
+            'inpost transform --obsidian --title "My Post" -i --save',
+            'inpost transform --notion-title "My Post" --tone casual --hashtags',
+            'inpost transform "Paste your content here" -i',
+          ],
+        });
+        return;
+      }
+
       if (options.interactive) {
         process.env.LOG_LEVEL = 'fatal';
         setLogLevel('fatal');
       }
 
       const env = loadEnv();
+
+      // ── Resolve --notebook/provider shorthand + --title/--id ──────────────
+      if ((options.notebook || options.notion || options.onenote || options.obsidian || options.evernote) && (options.title || options.id)) {
+        const nb =
+          options.notion ? 'notion' :
+          options.onenote ? 'onenote' :
+          options.obsidian ? 'obsidian' :
+          options.evernote ? 'evernote' :
+          options.notebook ?? env.DEFAULT_NOTEBOOK;
+        if (nb === 'notion') {
+          if (options.title) options.notionTitle = options.title;
+          if (options.id) options.notionId = options.id;
+        } else if (nb === 'onenote') {
+          if (options.title) options.onenoteTitle = options.title;
+          if (options.id) options.onenoteId = options.id;
+        } else if (nb === 'obsidian') {
+          if (options.title) options.obsidianTitle = options.title;
+          if (options.id) options.obsidianId = options.id;
+        } else if (nb === 'evernote') {
+          if (options.title) options.evernoteTitle = options.title;
+          if (options.id) options.evernoteId = options.id;
+        }
+      }
 
       // Resolve content from input source
       let content: string;
@@ -205,6 +285,7 @@ export function registerTransformCommand(program: Command): void {
                 { name: '📝 Edit directly', value: 'edit' },
                 { name: '🔄 Regenerate from scratch', value: 'regenerate' },
                 { name: '✗ Cancel', value: 'cancel' },
+                { name: '❓ Help', value: 'help' },
               ],
             },
           ]);
@@ -218,6 +299,21 @@ export function registerTransformCommand(program: Command): void {
           if (action === 'cancel') {
             console.log(chalk.yellow('\nCancelled.\n'));
             return;
+          }
+
+          if (action === 'help') {
+            console.log(chalk.bold('\nInteractive mode options:\n'));
+            console.log(`  ${chalk.green('✓ Accept')}         Save this version and continue to --save / exit`);
+            console.log(`  ${chalk.cyan('✏️  Refine')}         Describe a change and the AI will rewrite the post`);
+            console.log(`                 Examples: "make it shorter", "add a question at the end"`);
+            console.log(`  ${chalk.cyan('📝 Edit')}           Open the post in your $EDITOR for manual changes`);
+            console.log(`  ${chalk.cyan('🔄 Regenerate')}     Discard current version and generate a fresh one`);
+            console.log(`  ${chalk.red('✗ Cancel')}         Exit without saving anything`);
+            console.log();
+            console.log(chalk.dim('  Tip: run with --save to write the accepted post back to your notebook'));
+            console.log(chalk.dim('  Tip: run with --tone casual (or professional/authority/storytelling/educational)'));
+            console.log();
+            continue;
           }
 
           if (action === 'regenerate') {

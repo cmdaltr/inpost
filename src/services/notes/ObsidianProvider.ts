@@ -219,6 +219,16 @@ export class ObsidianProvider implements NoteProvider {
     return this.readNoteFile(filePath);
   }
 
+  async listNotes(): Promise<Array<{ id: string; title: string }>> {
+    const files = this.getAllMarkdownFiles(this.notesDir);
+    return files
+      .map((f) => ({
+        id: this.filePathToId(f),
+        title: path.basename(f, '.md'),
+      }))
+      .sort((a, b) => a.title.localeCompare(b.title));
+  }
+
   async saveAISummary(id: string, summary: string): Promise<void> {
     const filePath = this.idToFilePath(id);
     if (!fs.existsSync(filePath)) {

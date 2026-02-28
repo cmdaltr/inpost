@@ -1,8 +1,11 @@
+import fs from 'fs';
+import os from 'os';
 import { Command } from 'commander';
 import chalk from 'chalk';
 import { tryLoadEnv } from '../../config/index.js';
 import { defaultConfig } from '../../config/default.js';
 import { readCredentials } from '../services/linkedin/token-store.js';
+import { printCommandHelp } from '../utils/help.js';
 
 function check(label: string, ok: boolean, detail: string): void {
   const icon = ok ? chalk.green('✓') : chalk.red('✗');
@@ -14,26 +17,101 @@ export function registerStatusCommand(program: Command): void {
   program
     .command('status')
     .description('Check configuration and connection status')
-    .action(async () => {
+    .argument('[query]', 'Pass ? for help')
+    .option('--notebook <provider>', 'Notebook provider to check (overrides DEFAULT_NOTEBOOK)')
+    .option('--notion', 'Shorthand for --notebook notion', false)
+    .option('--onenote', 'Shorthand for --notebook onenote', false)
+    .option('--obsidian', 'Shorthand for --notebook obsidian', false)
+    .option('--evernote', 'Shorthand for --notebook evernote', false)
+    .action(async (query, options) => {
+      if (query === '?') {
+        printCommandHelp({
+          command: 'status',
+          summary: 'Check your InPost configuration and connection status.',
+          sections: [
+            {
+              heading: 'Options',
+              options: [
+                { flag: '--notebook <provider>', description: 'Show config for a specific notebook provider', default: 'DEFAULT_NOTEBOOK in .env' },
+                { flag: '--notion | --obsidian | --onenote | --evernote', description: 'Provider shorthands' },
+              ],
+            },
+          ],
+          examples: [
+            'inpost status',
+            'inpost status --obsidian',
+            'inpost status --notebook onenote',
+          ],
+        });
+        return;
+      }
+
       console.log(chalk.bold('\nInPost Status\n'));
 
       const env = tryLoadEnv();
+      const notebook =
+        options.notion ? 'notion' :
+        options.onenote ? 'onenote' :
+        options.obsidian ? 'obsidian' :
+        options.evernote ? 'evernote' :
+        options.notebook ?? env.DEFAULT_NOTEBOOK ?? 'notion';
 
-      // Notion
-      const hasNotionToken = Boolean(env.NOTION_API_TOKEN);
-      const hasNotionDb = Boolean(env.NOTION_DATABASE_ID);
-      check(
-        'Notion API Token',
-        hasNotionToken,
-        hasNotionToken ? 'Configured' : 'Missing NOTION_API_TOKEN',
-      );
-      check(
-        'Notion Database ID',
-        hasNotionDb,
-        hasNotionDb ? 'Configured' : 'Missing NOTION_DATABASE_ID',
-      );
+      // ── Active notebook ──────────────────────────────────────────────────
+      console.log(`  ${chalk.dim('Default notebook:')} ${chalk.cyan(notebook)}\n`);
 
-      // LinkedIn
+      if (notebook === 'notion') {
+        const hasNotionToken = Boolean(env.NOTION_API_TOKEN);
+        const hasNotionDb = Boolean(env.NOTION_DATABASE_ID);
+        check(
+          'Notion API Token',
+          hasNotionToken,
+          hasNotionToken ? 'Configured' : 'Missing NOTION_API_TOKEN',
+        );
+        check(
+          'Notion Database ID',
+          hasNotionDb,
+          hasNotionDb ? 'Configured' : 'Missing NOTION_DATABASE_ID',
+        );
+      } else if (notebook === 'obsidian') {
+        const vaultPath = env.OBSIDIAN_VAULT_PATH;
+        const vaultExists = Boolean(vaultPath) && fs.existsSync(vaultPath!);
+        check(
+          'Obsidian Vault Path',
+          vaultExists,
+          vaultExists ? vaultPath! : vaultPath ? `Path not found: ${vaultPath}` : 'Missing OBSIDIAN_VAULT_PATH',
+        );
+        if (env.OBSIDIAN_NOTES_DIR) {
+          check('Obsidian Notes Dir', true, env.OBSIDIAN_NOTES_DIR);
+        }
+      } else if (notebook === 'onenote') {
+        const hasClientId = Boolean(env.ONENOTE_CLIENT_ID);
+        const credPath = `${os.homedir()}/.inpost/onenote-credentials.json`;
+        const hasCreds = fs.existsSync(credPath);
+        check(
+          'OneNote Client ID',
+          hasClientId,
+          hasClientId ? 'Configured' : 'Missing ONENOTE_CLIENT_ID',
+        );
+        check(
+          'OneNote Auth',
+          hasCreds,
+          hasCreds ? credPath : 'Not authenticated (run: inpost auth --onenote)',
+        );
+      } else if (notebook === 'evernote') {
+        const hasToken = Boolean(env.EVERNOTE_TOKEN);
+        check(
+          'Evernote Token',
+          hasToken,
+          hasToken ? 'Configured' : 'Missing EVERNOTE_TOKEN',
+        );
+        if (env.EVERNOTE_NOTEBOOK) {
+          check('Evernote Notebook', true, env.EVERNOTE_NOTEBOOK);
+        }
+      }
+
+      console.log();
+
+      // ── LinkedIn ─────────────────────────────────────────────────────────
       const hasClientId = Boolean(env.LINKEDIN_CLIENT_ID);
       const hasClientSecret = Boolean(env.LINKEDIN_CLIENT_SECRET);
       check(
@@ -72,7 +150,9 @@ export function registerStatusCommand(program: Command): void {
         );
       }
 
-      // AI Provider (priority: Groq > Gemini > Anthropic)
+      console.log();
+
+      // ── AI Provider (priority: Groq > Gemini > Anthropic) ────────────────
       const hasGroqKey = Boolean(env.GROQ_API_KEY);
       const hasGeminiKey = Boolean(env.GEMINI_API_KEY);
       const hasAnthropicKey = Boolean(env.ANTHROPIC_API_KEY);

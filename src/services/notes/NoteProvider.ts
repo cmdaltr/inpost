@@ -39,6 +39,12 @@ export interface NoteProvider {
   saveAISummary(id: string, summary: string): Promise<void>;
 
   /**
+   * List all available notes in the source.
+   * Optional — not all providers support listing.
+   */
+  listNotes?(): Promise<Array<{ id: string; title: string }>>;
+
+  /**
    * Return the display name of this provider, used in logs.
    * e.g. "OneNote", "Obsidian", "Evernote"
    */

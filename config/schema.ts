@@ -39,6 +39,9 @@ export const envSchema = z
     DEFAULT_TONE: z
       .enum(['professional', 'casual', 'authority', 'storytelling', 'educational'])
       .default('professional'),
+    DEFAULT_NOTEBOOK: z
+      .enum(['notion', 'onenote', 'obsidian', 'evernote'])
+      .default('notion'),
   })
   .refine((data) => data.GROQ_API_KEY || data.GEMINI_API_KEY || data.ANTHROPIC_API_KEY, {
     message: 'One of GROQ_API_KEY, GEMINI_API_KEY, or ANTHROPIC_API_KEY must be provided',

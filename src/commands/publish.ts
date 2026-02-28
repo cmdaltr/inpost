@@ -8,11 +8,20 @@ import { createAIClientFromEnv } from '../services/ai/provider.js';
 import { generateHashtags } from '../services/ai/hashtags.js';
 import { validatePostLength } from '../utils/validation.js';
 import { resolveNote } from '../services/notes/NoteProviderFactory.js';
+import { printCommandHelp } from '../utils/help.js';
 
 export function registerPublishCommand(program: Command): void {
   program
     .command('publish [text]')
     .description('Publish content to LinkedIn')
+    // ── Generic notebook shorthand ───────────────────────────────────────────
+    .option('--notebook <provider>', 'Notebook provider (overrides DEFAULT_NOTEBOOK): notion | onenote | obsidian | evernote')
+    .option('--notion', 'Shorthand for --notebook notion', false)
+    .option('--onenote', 'Shorthand for --notebook onenote', false)
+    .option('--obsidian', 'Shorthand for --notebook obsidian', false)
+    .option('--evernote', 'Shorthand for --notebook evernote', false)
+    .option('--title <title>', 'Note title — used with --notebook/provider flag as shorthand for --<provider>-title')
+    .option('--id <id>', 'Note ID — used with --notebook/provider flag as shorthand for --<provider>-id')
     // ── Notion ──────────────────────────────────────────────────────────────
     .option('--notion-id <id>', 'Publish AI Summary from a Notion page by ID')
     .option('--notion-title <title>', 'Publish AI Summary from a Notion page by title')
@@ -31,7 +40,67 @@ export function registerPublishCommand(program: Command): void {
     .option('--dry-run', 'Preview without actually posting', false)
     .option('--connections', 'Limit visibility to connections only', false)
     .action(async (textArg, options) => {
+      if (textArg === '?') {
+        printCommandHelp({
+          command: 'publish [text]',
+          summary: 'Publish a post to LinkedIn from a notebook source or direct text.',
+          sections: [
+            {
+              heading: 'Source',
+              options: [
+                { flag: '--notebook <provider>', description: 'notion | onenote | obsidian | evernote', default: 'notion' },
+                { flag: '--notion | --obsidian | --onenote | --evernote', description: 'Provider shorthands (combine with --title)' },
+                { flag: '--title <title>', description: 'Note title — use with a provider flag' },
+                { flag: '--notion-title <title>', description: 'Publish AI Summary from Notion page' },
+                { flag: '--obsidian-title <title>', description: 'Publish from Obsidian note' },
+                { flag: '--onenote-title <title>', description: 'Publish from OneNote page' },
+                { flag: '--evernote-title <title>', description: 'Publish from Evernote note' },
+              ],
+            },
+            {
+              heading: 'Options',
+              options: [
+                { flag: '--dry-run', description: 'Preview without posting to LinkedIn' },
+                { flag: '--no-hashtags', description: 'Disable auto-generated hashtags' },
+                { flag: '--no-link', description: "Don't include the blog link in the post" },
+                { flag: '--connections', description: 'Limit visibility to connections only' },
+              ],
+            },
+          ],
+          examples: [
+            'inpost publish --notion-title "My Post"',
+            'inpost publish --notion-title "My Post" --dry-run',
+            'inpost publish --obsidian --title "My Post"',
+            'inpost publish "Paste your post text here"',
+          ],
+        });
+        return;
+      }
+
       const env = loadEnv();
+
+      // ── Resolve --notebook/provider shorthand + --title/--id ──────────────
+      if ((options.notebook || options.notion || options.onenote || options.obsidian || options.evernote) && (options.title || options.id)) {
+        const nb =
+          options.notion ? 'notion' :
+          options.onenote ? 'onenote' :
+          options.obsidian ? 'obsidian' :
+          options.evernote ? 'evernote' :
+          options.notebook ?? env.DEFAULT_NOTEBOOK;
+        if (nb === 'notion') {
+          if (options.title) options.notionTitle = options.title;
+          if (options.id) options.notionId = options.id;
+        } else if (nb === 'onenote') {
+          if (options.title) options.onenoteTitle = options.title;
+          if (options.id) options.onenoteId = options.id;
+        } else if (nb === 'obsidian') {
+          if (options.title) options.obsidianTitle = options.title;
+          if (options.id) options.obsidianId = options.id;
+        } else if (nb === 'evernote') {
+          if (options.title) options.evernoteTitle = options.title;
+          if (options.id) options.evernoteId = options.id;
+        }
+      }
 
       // Resolve text to publish
       let text: string;
