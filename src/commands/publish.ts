@@ -7,13 +7,25 @@ import { createNotionWriter } from '../services/notion/writer.js';
 import { createAIClientFromEnv } from '../services/ai/provider.js';
 import { generateHashtags } from '../services/ai/hashtags.js';
 import { validatePostLength } from '../utils/validation.js';
+import { resolveNote } from '../services/notes/NoteProviderFactory.js';
 
 export function registerPublishCommand(program: Command): void {
   program
     .command('publish [text]')
     .description('Publish content to LinkedIn')
+    // ── Notion ──────────────────────────────────────────────────────────────
     .option('--notion-id <id>', 'Publish AI Summary from a Notion page by ID')
     .option('--notion-title <title>', 'Publish AI Summary from a Notion page by title')
+    // ── OneNote ─────────────────────────────────────────────────────────────
+    .option('--onenote-title <title>', 'Fetch content from OneNote by page title')
+    .option('--onenote-id <id>', 'Fetch content from OneNote by page ID')
+    // ── Obsidian ────────────────────────────────────────────────────────────
+    .option('--obsidian-title <title>', 'Fetch content from Obsidian vault by note title')
+    .option('--obsidian-id <id>', 'Fetch content from Obsidian vault by relative path')
+    // ── Evernote ────────────────────────────────────────────────────────────
+    .option('--evernote-title <title>', 'Fetch content from Evernote by note title')
+    .option('--evernote-id <id>', 'Fetch content from Evernote by note GUID')
+    // ── Publish options ──────────────────────────────────────────────────────
     .option('--no-hashtags', 'Disable auto-generated hashtags')
     .option('--no-link', 'Disable blog link in post')
     .option('--dry-run', 'Preview without actually posting', false)
@@ -27,7 +39,24 @@ export function registerPublishCommand(program: Command): void {
       let tags: string[] = [];
       let blogUrl: string | undefined;
 
-      if (options.notionId || options.notionTitle) {
+      if (options.onenoteTitle || options.onenoteId || options.obsidianTitle || options.obsidianId || options.evernoteTitle || options.evernoteId) {
+        // ── New providers ────────────────────────────────────────────────
+        const { provider, content: note } = await resolveNote({
+          onenoteTitle: options.onenoteTitle,
+          onenoteId: options.onenoteId,
+          obsidianTitle: options.obsidianTitle,
+          obsidianId: options.obsidianId,
+          evernoteTitle: options.evernoteTitle,
+          evernoteId: options.evernoteId,
+        });
+
+        console.log(chalk.dim(`\nFetched "${note.title}" from ${provider.providerName}`));
+        console.log(chalk.yellow('Tip: Run `inpost transform --save` first to generate and review an AI summary before publishing.\n'));
+
+        text = note.text;
+        tags = note.tags ?? [];
+
+      } else if (options.notionId || options.notionTitle) {
         const reader = createNotionReader(
           env.NOTION_API_TOKEN,
           env.NOTION_DATABASE_ID,

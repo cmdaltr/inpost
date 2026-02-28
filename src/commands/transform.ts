@@ -7,14 +7,27 @@ import { createNotionReader } from '../services/notion/reader.js';
 import { createAIClientFromEnv } from '../services/ai/provider.js';
 import { PROMPTS } from '../services/ai/prompts.js';
 import { setLogLevel } from '../utils/logger.js';
+import { resolveNote } from '../services/notes/NoteProviderFactory.js';
+import type { NoteProvider } from '../services/notes/NoteProvider.js';
 import type { Tone, TransformOptions } from '../types/index.js';
 
 export function registerTransformCommand(program: Command): void {
   program
     .command('transform [text]')
     .description('Transform content for LinkedIn')
+    // ── Notion ──────────────────────────────────────────────────────────────
     .option('--notion-id <id>', 'Fetch content from a Notion page by ID')
     .option('--notion-title <title>', 'Fetch content from a Notion page by title')
+    // ── OneNote ─────────────────────────────────────────────────────────────
+    .option('--onenote-title <title>', 'Fetch content from OneNote by page title')
+    .option('--onenote-id <id>', 'Fetch content from OneNote by page ID')
+    // ── Obsidian ────────────────────────────────────────────────────────────
+    .option('--obsidian-title <title>', 'Fetch content from Obsidian vault by note title')
+    .option('--obsidian-id <id>', 'Fetch content from Obsidian vault by relative path')
+    // ── Evernote ────────────────────────────────────────────────────────────
+    .option('--evernote-title <title>', 'Fetch content from Evernote by note title')
+    .option('--evernote-id <id>', 'Fetch content from Evernote by note GUID')
+    // ── Transform options ────────────────────────────────────────────────────
     .option('--edit', 'Edit existing AI summary instead of creating new', false)
     .option('--existing', 'Use existing AI summary directly (skip transformation)', false)
     .option('--file <path>', 'Read content from a file')
@@ -24,10 +37,9 @@ export function registerTransformCommand(program: Command): void {
     .option('--hashtags', 'Auto-generate hashtags', false)
     .option('--thread', 'Split into LinkedIn thread format', false)
     .option('-i, --interactive', 'Refine output with feedback loop', false)
-    .option('--save', 'Save result back to Notion (requires --notion-id or --notion-title)', false)
+    .option('--save', 'Save result back to the source note', false)
     .option('--json', 'Output as JSON', false)
     .action(async (text, options) => {
-      // Suppress verbose logs in interactive mode for cleaner output
       if (options.interactive) {
         process.env.LOG_LEVEL = 'fatal';
         setLogLevel('fatal');
@@ -40,8 +52,29 @@ export function registerTransformCommand(program: Command): void {
       let tags: string[] = [];
       let notionPageId: string | undefined;
       let existingAiSummary: string | undefined;
+      let noteProvider: NoteProvider | undefined;
+      let noteProviderPageId: string | undefined;
 
-      if (options.notionId || options.notionTitle) {
+      if (options.onenoteTitle || options.onenoteId || options.obsidianTitle || options.obsidianId || options.evernoteTitle || options.evernoteId) {
+        // ── New providers (OneNote, Obsidian, Evernote) ────────────────────
+        const { provider, content: note } = await resolveNote({
+          onenoteTitle: options.onenoteTitle,
+          onenoteId: options.onenoteId,
+          obsidianTitle: options.obsidianTitle,
+          obsidianId: options.obsidianId,
+          evernoteTitle: options.evernoteTitle,
+          evernoteId: options.evernoteId,
+        });
+
+        console.log(chalk.dim(`\nFetched "${note.title}" from ${provider.providerName}`));
+
+        content = note.text;
+        tags = note.tags ?? [];
+        noteProvider = provider;
+        noteProviderPageId = note.id;
+
+      } else if (options.notionId || options.notionTitle) {
+        // ── Notion (existing path) ─────────────────────────────────────────
         const reader = createNotionReader(
           env.NOTION_API_TOKEN,
           env.NOTION_DATABASE_ID,
@@ -64,10 +97,10 @@ export function registerTransformCommand(program: Command): void {
         tags = post.tags;
         existingAiSummary = post.aiSummary;
 
-        // If --edit flag is set and there's an existing summary, use it as the starting point
         if (options.edit && existingAiSummary) {
           content = existingAiSummary;
         }
+
       } else if (text) {
         content = text;
       } else if (options.file) {
@@ -75,13 +108,12 @@ export function registerTransformCommand(program: Command): void {
         content = fs.readFileSync(options.file, 'utf-8');
       } else {
         console.error(
-          chalk.red('Error: Provide text, --notion-id, or --file'),
+          chalk.red('Error: Provide text, --notion-id, --onenote-title, --obsidian-title, --evernote-title, or --file'),
         );
         process.exit(1);
       }
 
       const transformer = createTransformer(env);
-
       const tone = (options.tone || env.DEFAULT_TONE || 'professional') as Tone;
 
       const transformOptions: TransformOptions = {
@@ -97,7 +129,6 @@ export function registerTransformCommand(program: Command): void {
 
       let result: import('../types/index.js').TransformResult;
 
-      // Use existing AI summary directly without transformation
       if (options.existing && existingAiSummary) {
         console.log(chalk.cyan('\n📄 Using existing AI summary...\n'));
         result = {
@@ -229,9 +260,7 @@ export function registerTransformCommand(program: Command): void {
               },
             ]);
 
-            if (!feedback.trim()) {
-              continue;
-            }
+            if (!feedback.trim()) continue;
 
             console.log(chalk.cyan('\n✏️  Refining...\n'));
 
@@ -249,7 +278,6 @@ export function registerTransformCommand(program: Command): void {
           }
         }
       } else {
-        // Only show stats in non-interactive mode
         console.log(
           chalk.dim(
             `\n(${result.metadata.tokensUsed} tokens, ${result.metadata.processingTimeMs}ms)`,
@@ -257,20 +285,24 @@ export function registerTransformCommand(program: Command): void {
         );
       }
 
-      // Save to Notion if requested
-      if (options.save && notionPageId) {
-        const { createNotionWriter } = await import(
-          '../services/notion/writer.js'
-        );
-        const writer = createNotionWriter(env.NOTION_API_TOKEN);
-        await writer.updateAISummary(notionPageId, result.summary);
-        if (result.variants) {
-          await writer.updateVariants(
-            notionPageId,
-            result.variants.join('\n\n---\n\n'),
-          );
+      // Save result back to source
+      if (options.save) {
+        if (noteProvider && noteProviderPageId) {
+          // New providers: save via provider interface
+          await noteProvider.saveAISummary(noteProviderPageId, result.summary);
+          console.log(chalk.green(`\nSaved to ${noteProvider.providerName}.`));
+        } else if (notionPageId) {
+          // Notion: save via Notion writer
+          const { createNotionWriter } = await import('../services/notion/writer.js');
+          const writer = createNotionWriter(env.NOTION_API_TOKEN);
+          await writer.updateAISummary(notionPageId, result.summary);
+          if (result.variants) {
+            await writer.updateVariants(notionPageId, result.variants.join('\n\n---\n\n'));
+          }
+          console.log(chalk.green('\nSaved to Notion.'));
+        } else {
+          console.log(chalk.yellow('\n--save requires a note source (--notion-title, --onenote-title, --obsidian-title, or --evernote-title).'));
         }
-        console.log(chalk.green('\nSaved to Notion.'));
       }
 
       console.log();

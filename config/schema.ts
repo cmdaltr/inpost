@@ -21,6 +21,21 @@ export const envSchema = z
     SCHEDULE_CRON: z.string().default('0 11 * * 1'),
     SCHEDULE_LIMIT: z.coerce.number().int().min(1).default(1),
     SCHEDULE_TIMEZONE: z.string().default('Europe/London'),
+
+    // Obsidian
+    OBSIDIAN_VAULT_PATH: z.string().optional(),
+    OBSIDIAN_NOTES_DIR: z.string().optional(),
+
+    // OneNote
+    ONENOTE_CLIENT_ID: z.string().optional(),
+    ONENOTE_CLIENT_SECRET: z.string().optional(),
+    ONENOTE_TENANT_ID: z.string().default('consumers'),
+    ONENOTE_REDIRECT_URI: z.string().url().default('http://localhost:3456/callback'),
+
+    // Evernote
+    EVERNOTE_TOKEN: z.string().optional(),
+    EVERNOTE_NOTEBOOK: z.string().optional(),
+    EVERNOTE_SANDBOX: z.string().default('false'),
     DEFAULT_TONE: z
       .enum(['professional', 'casual', 'authority', 'storytelling', 'educational'])
       .default('professional'),
