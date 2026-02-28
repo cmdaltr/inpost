@@ -253,6 +253,9 @@ Add the following secrets:
 | `GROQ_API_KEY` | One of these three | Your `.env` file |
 | `DEFAULT_TONE` | No — defaults to `professional` | Your `.env` file |
 | `LOG_LEVEL` | No — defaults to `info` | Your `.env` file |
+| `SCHEDULE_CRON` | No — defaults to `0 11 * * 1` | Your `.env` file |
+| `SCHEDULE_TIMEZONE` | No — defaults to `Europe/London` | Your `.env` file |
+| `SCHEDULE_LIMIT` | No — defaults to `1` | Your `.env` file |
 
 Only add the AI key for the provider you actually use. You do not need all three.
 

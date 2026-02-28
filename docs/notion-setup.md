@@ -100,12 +100,37 @@ inpost schedule --once
 
 When the scheduler fires, it:
 
-1. Fetches up to 5 pages with **Status = Ready**
+1. Fetches the next **Ready** post(s) up to the configured limit
 2. Transforms each one with AI and saves the result to **AI Summary**
 3. Publishes to LinkedIn
 4. Updates the page: **Status → Published**, writes the LinkedIn URL and post ID
 
 Failed posts are marked **Error** with a message in the **Error Log** field.
+
+### Scheduler configuration
+
+All scheduler settings can be set in your `.env` file. CLI flags override them for one-off changes.
+
+| Variable | Default | Description |
+|---|---|---|
+| `SCHEDULE_CRON` | `0 11 * * 1` | When to run (cron syntax) |
+| `SCHEDULE_TIMEZONE` | `Europe/London` | Timezone for the cron expression |
+| `SCHEDULE_LIMIT` | `1` | Maximum posts to publish per run |
+
+Example `.env` entries:
+
+```bash
+SCHEDULE_CRON=0 11 * * 1
+SCHEDULE_TIMEZONE=Europe/London
+SCHEDULE_LIMIT=1
+```
+
+Override on the command line without changing `.env`:
+
+```bash
+inpost schedule --limit 2
+inpost schedule --cron "0 9 * * 1" --timezone "America/New_York"
+```
 
 To keep the scheduler running persistently, use a process manager like `pm2`:
 
