@@ -18,7 +18,9 @@ export const envSchema = z
       .optional()
       .transform((val) => (val === undefined || val === '' ? 'info' : val))
       .pipe(z.enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal'])),
-    SCHEDULE_CRON: z.string().default('0 9 * * 1-5'),
+    SCHEDULE_CRON: z.string().default('0 11 * * 1'),
+    SCHEDULE_LIMIT: z.coerce.number().int().min(1).default(1),
+    SCHEDULE_TIMEZONE: z.string().default('Europe/London'),
     DEFAULT_TONE: z
       .enum(['professional', 'casual', 'authority', 'storytelling', 'educational'])
       .default('professional'),

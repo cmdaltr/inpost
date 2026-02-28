@@ -15,6 +15,7 @@ export interface OrchestratorConfig {
 export interface SchedulerConfig {
   cron: string;
   timezone: string;
+  limit: number;
   runOnce: boolean;
   notionToken: string;
   notionDatabaseId: string;

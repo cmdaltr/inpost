@@ -24,7 +24,7 @@ export async function startScheduler(config: SchedulerConfig): Promise<void> {
     console.log(chalk.dim(`\n[${timestamp}] Running scheduled pipeline...`));
 
     try {
-      const results = await orchestrator.run('Ready', 5);
+      const results = await orchestrator.run('Ready', config.limit);
       const published = results.filter((r) => r.status === 'published').length;
       const errors = results.filter((r) => r.status === 'error').length;
       console.log(
