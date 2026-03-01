@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="images/inpost-logo.svg" alt="InPost" width="800" />
+  <img src="images/inpost-logo.svg" alt="InPost" width="820" />
 </p>
 
 # InPost
