@@ -73,7 +73,7 @@ export interface NotionPostSummary {
 }
 
 export interface NotionReader {
-  fetchByStatus(status: string, limit: number): Promise<NotionPost[]>;
+  fetchByStatus(status: string, limit: number, order?: 'oldest' | 'newest'): Promise<NotionPost[]>;
   fetchByTitle(title: string): Promise<NotionPost | null>;
   fetchPage(pageId: string): Promise<NotionPost>;
   listTitles(limit: number): Promise<NotionPostSummary[]>;
@@ -131,8 +131,8 @@ export function createNotionReader(
   }
 
   return {
-    async fetchByStatus(status: string, limit: number): Promise<NotionPost[]> {
-      log.info({ status, limit }, 'Fetching posts from Notion');
+    async fetchByStatus(status: string, limit: number, order: 'oldest' | 'newest' = 'oldest'): Promise<NotionPost[]> {
+      log.info({ status, limit, order }, 'Fetching posts from Notion');
 
       await notionLimiter.acquire();
       const response = await withRetry(() =>
@@ -144,6 +144,7 @@ export function createNotionReader(
               property: cfg.statusProperty,
               select: { equals: status },
             },
+            sorts: [{ timestamp: 'created_time', direction: order === 'oldest' ? 'ascending' : 'descending' }],
             page_size: Math.min(limit, 100),
           },
         }),

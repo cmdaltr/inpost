@@ -10,6 +10,7 @@ export interface OrchestratorConfig {
   includeHashtags: boolean;
   isDryRun: boolean;
   requireConfirmation: boolean;
+  order: 'oldest' | 'newest';
 }
 
 export interface SchedulerConfig {
@@ -20,4 +21,5 @@ export interface SchedulerConfig {
   notionToken: string;
   notionDatabaseId: string;
   aiConfig: AIProviderConfig;
+  order: 'oldest' | 'newest';
 }

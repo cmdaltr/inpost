@@ -16,6 +16,7 @@ export async function startScheduler(config: SchedulerConfig): Promise<void> {
     includeHashtags: true,
     isDryRun: false,
     requireConfirmation: false,
+    order: config.order,
   });
 
   async function runPipeline() {

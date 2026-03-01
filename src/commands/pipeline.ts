@@ -20,6 +20,7 @@ export function registerPipelineCommand(program: Command): void {
     .option('--dry-run', 'Run everything except actual LinkedIn publish', false)
     .option('--confirm', 'Require confirmation before each publish', true)
     .option('--no-confirm', 'Skip confirmation prompts')
+    .option('--order <order>', 'Post selection order: oldest | newest (overrides PIPELINE_ORDER in .env)')
     .action(async (query, options) => {
       if (query === '?') {
         printCommandHelp({
@@ -36,6 +37,7 @@ export function registerPipelineCommand(program: Command): void {
                 { flag: '--hashtags', description: 'Add auto-generated hashtags to each post' },
                 { flag: '--dry-run', description: 'Run the full pipeline but skip the LinkedIn publish' },
                 { flag: '--no-confirm', description: 'Skip the confirmation prompt before each publish' },
+                { flag: '--order <oldest|newest>', description: 'Pick the oldest or newest ready posts first', default: 'PIPELINE_ORDER in .env (oldest)' },
               ],
             },
           ],
@@ -53,6 +55,8 @@ export function registerPipelineCommand(program: Command): void {
 
       console.log(chalk.bold('\nInPost Pipeline\n'));
 
+      const order = (options.order ?? env.PIPELINE_ORDER) as 'oldest' | 'newest';
+
       const orchestrator = createOrchestrator({
         notionToken: env.NOTION_API_TOKEN,
         notionDatabaseId: env.NOTION_DATABASE_ID,
@@ -62,6 +66,7 @@ export function registerPipelineCommand(program: Command): void {
         includeHashtags: options.hashtags,
         isDryRun: options.dryRun,
         requireConfirmation: options.confirm,
+        order,
       });
 
       const results = await orchestrator.run(

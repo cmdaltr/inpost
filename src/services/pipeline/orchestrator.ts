@@ -26,7 +26,7 @@ export function createOrchestrator(config: OrchestratorConfig): Orchestrator {
 
       // 1. Fetch posts from Notion
       console.log(chalk.dim('Fetching posts from Notion...'));
-      const posts = await reader.fetchByStatus(status, limit);
+      const posts = await reader.fetchByStatus(status, limit, config.order);
 
       if (posts.length === 0) {
         console.log(chalk.yellow('No posts found. Nothing to do.'));

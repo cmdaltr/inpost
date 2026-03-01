@@ -164,6 +164,7 @@ Options:
   --dry-run             Run everything except actual LinkedIn publish
   --no-confirm          Skip confirmation prompts
   --notebook <provider> notion | obsidian | onenote | evernote
+  --order <order>       oldest | newest (overrides PIPELINE_ORDER in .env)
 ```
 
 ### Fetch
@@ -198,6 +199,7 @@ Options:
   --cron <expression>   Cron expression (overrides SCHEDULE_CRON in .env)
   --timezone <tz>       Timezone (overrides SCHEDULE_TIMEZONE in .env)
   --limit <number>      Max posts per run (overrides SCHEDULE_LIMIT in .env)
+  --order <order>       oldest | newest (overrides PIPELINE_ORDER in .env)
 ```
 
 ### Auth
@@ -256,6 +258,7 @@ DEFAULT_NOTEBOOK=notion        # notion | onenote | obsidian | evernote
 SCHEDULE_CRON=0 11 * * 1       # Default: Mondays at 11am
 SCHEDULE_TIMEZONE=Europe/London
 SCHEDULE_LIMIT=1               # Max posts per scheduled run
+PIPELINE_ORDER=oldest          # oldest | newest — which ready posts to pick first
 
 # Obsidian (no API key needed)
 OBSIDIAN_VAULT_PATH=/Users/you/Documents/MyVault
