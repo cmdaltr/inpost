@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 580 182" width="580" height="182">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="30%" y2="100%">
+      <stop offset="0%" style="stop-color:#0c0c14"/>
+      <stop offset="100%" style="stop-color:#14142a"/>
+    </linearGradient>
+    <linearGradient id="notionG" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#22223a"/>
+      <stop offset="100%" style="stop-color:#16162a"/>
+    </linearGradient>
+    <linearGradient id="obsidianG" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e1838"/>
+      <stop offset="100%" style="stop-color:#130e28"/>
+    </linearGradient>
+    <linearGradient id="onenoteG" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#38102e"/>
+      <stop offset="100%" style="stop-color:#26081e"/>
+    </linearGradient>
+    <linearGradient id="evernoteG" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d3018"/>
+      <stop offset="100%" style="stop-color:#071e0e"/>
+    </linearGradient>
+    <linearGradient id="transformG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#172217"/>
+      <stop offset="100%" style="stop-color:#0f180f"/>
+    </linearGradient>
+    <linearGradient id="aiG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0c1a30"/>
+      <stop offset="100%" style="stop-color:#081020"/>
+    </linearGradient>
+    <linearGradient id="publishG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#172217"/>
+      <stop offset="100%" style="stop-color:#0f180f"/>
+    </linearGradient>
+    <linearGradient id="liG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#101e2e"/>
+      <stop offset="100%" style="stop-color:#08131e"/>
+    </linearGradient>
+    <marker id="arrDown" markerWidth="10" markerHeight="10" refX="5" refY="10" orient="0">
+      <polygon points="0,0 10,0 5,10" fill="#3a3a5a"/>
+    </marker>
+    <marker id="arrDownGreen" markerWidth="10" markerHeight="10" refX="5" refY="10" orient="0">
+      <polygon points="0,0 10,0 5,10" fill="#2a7a4a"/>
+    </marker>
+    <marker id="arrDownBlue" markerWidth="10" markerHeight="10" refX="5" refY="10" orient="0">
+      <polygon points="0,0 10,0 5,10" fill="#2a5a8a"/>
+    </marker>
+  </defs>
+  <!-- Background -->
+  <rect width="580" height="182" fill="url(#bgGrad)" rx="12"/>
+  <!-- Subtle grid -->
+  <g opacity="0.025" stroke="#ffffff" stroke-width="1">
+    <line x1="145" y1="0" x2="145" y2="182"/>
+    <line x1="290" y1="0" x2="290" y2="182"/>
+    <line x1="435" y1="0" x2="435" y2="182"/>
+  </g>
+
+  <rect x="28" y="16" width="524" height="150" rx="8" fill="url(#aiG)" stroke="#1a3a6a" stroke-width="1"/>
+  <rect x="28" y="16" width="4" height="150" rx="2" fill="#4a8aee" opacity="0.5"/>
+  <rect x="32" y="16" width="520" height="34" rx="6" fill="#080e1c" opacity="0.9"/>
+  <rect x="40" y="23" width="16" height="16" rx="3" fill="#0a1428" stroke="#1a3a6a" stroke-width="1"/>
+  <text x="48" y="35" text-anchor="middle" fill="#3a6aaa" font-size="8" font-family="'Courier New', monospace" font-weight="bold">3</text>
+  <rect x="62" y="23" width="20" height="16" rx="3" fill="#080e1c" stroke="#1a3a6a" stroke-width="1"/>
+  <text x="72" y="35" text-anchor="middle" font-size="11">🤖</text>
+  <text x="90" y="35" fill="#5a9aee" font-size="11" font-family="'Courier New', monospace" letter-spacing="2" font-weight="bold">AI ENGINE</text>
+  <rect x="340" y="23" width="52" height="16" rx="8" fill="#1e3010" stroke="#6aaa22" stroke-width="1.5"/>
+  <text x="366" y="35" text-anchor="middle" fill="#aaee44" font-size="7" font-family="'Courier New', monospace" font-weight="bold">Groq ★</text>
+  <rect x="398" y="23" width="52" height="16" rx="8" fill="#0e1020" stroke="#2a2a4a" stroke-width="1"/>
+  <text x="424" y="35" text-anchor="middle" fill="#4a4a6a" font-size="7" font-family="'Courier New', monospace">Gemini</text>
+  <rect x="456" y="23" width="52" height="16" rx="8" fill="#0e1020" stroke="#2a2a4a" stroke-width="1"/>
+  <text x="482" y="35" text-anchor="middle" fill="#4a4a6a" font-size="7" font-family="'Courier New', monospace">Claude</text>
+  <line x1="33" y1="76" x2="547" y2="76" stroke="#1a3a6a" stroke-width="1" opacity="0.3"/>
+  <rect x="36" y="60" width="248" height="92" rx="4" fill="#060c18" stroke="#122a4a" stroke-width="1"/>
+  <text x="160" y="73" text-anchor="middle" fill="#3a6aaa" font-size="7.5" font-family="'Courier New', monospace" letter-spacing="1">GENERATES</text>
+  <line x1="41" y1="102" x2="279" y2="102" stroke="#0e2038" stroke-width="1"/>
+  <text x="50" y="91" fill="#5a8ace" font-size="7.5" font-family="'Courier New', monospace">📝  LinkedIn summary</text>
+  <text x="50" y="104" fill="#3a6aaa" font-size="7.5" font-family="'Courier New', monospace">#️⃣  Hashtags  ·  🎯 Tone</text>
+  <text x="50" y="117" fill="#3a6aaa" font-size="7.5" font-family="'Courier New', monospace">🪝  Hooks  ·  🔗 Blog link</text>
+  <text x="160" y="142" text-anchor="middle" fill="#2a5a8a" font-size="7" font-family="'Courier New', monospace">Auto: <tspan font-weight="bold" fill="#aaee44">Groq ★</tspan><tspan fill="#2a3a5a"> → Gemini → Claude</tspan></text>
+  <rect x="294" y="60" width="250" height="92" rx="4" fill="#060c18" stroke="#122a4a" stroke-width="1"/>
+  <text x="419" y="73" text-anchor="middle" fill="#3a6aaa" font-size="7.5" font-family="'Courier New', monospace" letter-spacing="1">TONE OPTIONS</text>
+  <line x1="299" y1="102" x2="539" y2="102" stroke="#0e2038" stroke-width="1"/>
+  <text x="304" y="91" fill="#3a6aaa" font-size="7.5" font-family="'Courier New', monospace">professional  ·  casual</text>
+  <text x="304" y="104" fill="#3a6aaa" font-size="7.5" font-family="'Courier New', monospace">authority  ·  storytelling</text>
+  <text x="304" y="117" fill="#3a6aaa" font-size="7.5" font-family="'Courier New', monospace">educational</text>
+  <text x="304" y="138" fill="#1a3a5a" font-size="7" font-family="'Courier New', monospace">--tone flag  ·  DEFAULT_TONE in .env</text>
+
+</svg>

@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 580 168" width="580" height="168">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="30%" y2="100%">
+      <stop offset="0%" style="stop-color:#0c0c14"/>
+      <stop offset="100%" style="stop-color:#14142a"/>
+    </linearGradient>
+    <linearGradient id="notionG" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#22223a"/>
+      <stop offset="100%" style="stop-color:#16162a"/>
+    </linearGradient>
+    <linearGradient id="obsidianG" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e1838"/>
+      <stop offset="100%" style="stop-color:#130e28"/>
+    </linearGradient>
+    <linearGradient id="onenoteG" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#38102e"/>
+      <stop offset="100%" style="stop-color:#26081e"/>
+    </linearGradient>
+    <linearGradient id="evernoteG" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d3018"/>
+      <stop offset="100%" style="stop-color:#071e0e"/>
+    </linearGradient>
+    <linearGradient id="transformG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#172217"/>
+      <stop offset="100%" style="stop-color:#0f180f"/>
+    </linearGradient>
+    <linearGradient id="aiG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0c1a30"/>
+      <stop offset="100%" style="stop-color:#081020"/>
+    </linearGradient>
+    <linearGradient id="publishG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#172217"/>
+      <stop offset="100%" style="stop-color:#0f180f"/>
+    </linearGradient>
+    <linearGradient id="liG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#101e2e"/>
+      <stop offset="100%" style="stop-color:#08131e"/>
+    </linearGradient>
+    <marker id="arrDown" markerWidth="10" markerHeight="10" refX="5" refY="10" orient="0">
+      <polygon points="0,0 10,0 5,10" fill="#3a3a5a"/>
+    </marker>
+    <marker id="arrDownGreen" markerWidth="10" markerHeight="10" refX="5" refY="10" orient="0">
+      <polygon points="0,0 10,0 5,10" fill="#2a7a4a"/>
+    </marker>
+    <marker id="arrDownBlue" markerWidth="10" markerHeight="10" refX="5" refY="10" orient="0">
+      <polygon points="0,0 10,0 5,10" fill="#2a5a8a"/>
+    </marker>
+  </defs>
+  <!-- Background -->
+  <rect width="580" height="168" fill="url(#bgGrad)" rx="12"/>
+  <!-- Subtle grid -->
+  <g opacity="0.025" stroke="#ffffff" stroke-width="1">
+    <line x1="145" y1="0" x2="145" y2="168"/>
+    <line x1="290" y1="0" x2="290" y2="168"/>
+    <line x1="435" y1="0" x2="435" y2="168"/>
+  </g>
+
+  <rect x="28" y="16" width="524" height="136" rx="8" fill="url(#publishG)" stroke="#2a5a2a" stroke-width="1"/>
+  <rect x="28" y="16" width="4" height="136" rx="2" fill="#5aaa5a" opacity="0.5"/>
+  <rect x="32" y="16" width="520" height="34" rx="6" fill="#101e10" opacity="0.8"/>
+  <rect x="40" y="23" width="16" height="16" rx="3" fill="#142414" stroke="#2a5a2a" stroke-width="1"/>
+  <text x="48" y="35" text-anchor="middle" fill="#3a7a3a" font-size="8" font-family="'Courier New', monospace" font-weight="bold">4</text>
+  <rect x="62" y="23" width="20" height="16" rx="3" fill="#101e10" stroke="#2a5a2a" stroke-width="1"/>
+  <text x="72" y="35" text-anchor="middle" font-size="11">🚀</text>
+  <text x="90" y="35" fill="#5aaa5a" font-size="11" font-family="'Courier New', monospace" letter-spacing="2" font-weight="bold">PUBLISH</text>
+  <circle cx="488" cy="34" r="4" fill="#ff5f57" opacity="0.8"/>
+  <circle cx="502" cy="34" r="4" fill="#ffbd2e" opacity="0.8"/>
+  <circle cx="516" cy="34" r="4" fill="#28c840" opacity="0.8"/>
+  <line x1="33" y1="52" x2="547" y2="52" stroke="#2a5a2a" stroke-width="1" opacity="0.3"/>
+  <text x="40" y="66" fill="#3aaa3a" font-size="8" font-family="'Courier New', monospace">$ inpost publish --notion-title "..." --dry-run</text>
+  <text x="40" y="78" fill="#3aaa3a" font-size="7" font-family="'Courier New', monospace" opacity="0.35">  --obsidian-title  |  --onenote-title  |  --evernote-title</text>
+  <rect x="36" y="84" width="508" height="56" rx="4" fill="#09120a" stroke="#1e4a1e" stroke-width="1"/>
+  <text x="290" y="98" text-anchor="middle" fill="#3a8a3a" font-size="7.5" font-family="'Courier New', monospace">Post preview (--dry-run)</text>
+  <line x1="41" y1="104" x2="539" y2="104" stroke="#162a16" stroke-width="1"/>
+  <text x="46" y="118" fill="#2a6a2a" font-size="7.5" font-family="'Courier New', monospace">AI summary  ·  hashtags  ·  link to source note  ·  visibility setting</text>
+  <text x="46" y="132" fill="#1a4a1a" font-size="7" font-family="'Courier New', monospace">Confirm before going live  ·  drop --dry-run to post  ·  --connections for private</text>
+
+</svg>

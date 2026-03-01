@@ -1,0 +1,145 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 580 498" width="580" height="498">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="30%" y2="100%">
+      <stop offset="0%" style="stop-color:#0c0c14"/>
+      <stop offset="100%" style="stop-color:#14142a"/>
+    </linearGradient>
+    <linearGradient id="notionG" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#22223a"/>
+      <stop offset="100%" style="stop-color:#16162a"/>
+    </linearGradient>
+    <linearGradient id="obsidianG" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e1838"/>
+      <stop offset="100%" style="stop-color:#130e28"/>
+    </linearGradient>
+    <linearGradient id="onenoteG" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#38102e"/>
+      <stop offset="100%" style="stop-color:#26081e"/>
+    </linearGradient>
+    <linearGradient id="evernoteG" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d3018"/>
+      <stop offset="100%" style="stop-color:#071e0e"/>
+    </linearGradient>
+    <linearGradient id="transformG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#172217"/>
+      <stop offset="100%" style="stop-color:#0f180f"/>
+    </linearGradient>
+    <linearGradient id="aiG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0c1a30"/>
+      <stop offset="100%" style="stop-color:#081020"/>
+    </linearGradient>
+    <linearGradient id="publishG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#172217"/>
+      <stop offset="100%" style="stop-color:#0f180f"/>
+    </linearGradient>
+    <linearGradient id="liG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#101e2e"/>
+      <stop offset="100%" style="stop-color:#08131e"/>
+    </linearGradient>
+    <marker id="arrDown" markerWidth="10" markerHeight="10" refX="5" refY="10" orient="0">
+      <polygon points="0,0 10,0 5,10" fill="#3a3a5a"/>
+    </marker>
+    <marker id="arrDownGreen" markerWidth="10" markerHeight="10" refX="5" refY="10" orient="0">
+      <polygon points="0,0 10,0 5,10" fill="#2a7a4a"/>
+    </marker>
+    <marker id="arrDownBlue" markerWidth="10" markerHeight="10" refX="5" refY="10" orient="0">
+      <polygon points="0,0 10,0 5,10" fill="#2a5a8a"/>
+    </marker>
+  </defs>
+  <!-- Background -->
+  <rect width="580" height="498" fill="url(#bgGrad)" rx="12"/>
+  <!-- Subtle grid -->
+  <g opacity="0.025" stroke="#ffffff" stroke-width="1">
+    <line x1="145" y1="0" x2="145" y2="498"/>
+    <line x1="290" y1="0" x2="290" y2="498"/>
+    <line x1="435" y1="0" x2="435" y2="498"/>
+  </g>
+
+  <!-- Step label -->
+  <rect x="28" y="16" width="524" height="24" rx="5" fill="#18182a" opacity="0.7"/>
+  <rect x="36" y="21" width="16" height="14" rx="3" fill="#22224a" stroke="#3a3a6a" stroke-width="1"/>
+  <text x="44" y="32" text-anchor="middle" fill="#7a7aaa" font-size="8" font-family="'Courier New', monospace" font-weight="bold">1</text>
+  <text x="60" y="32" fill="#b8b8e0" font-size="10" font-family="'Courier New', monospace" letter-spacing="2" font-weight="bold">  NOTE SOURCE</text>
+  <text x="480" y="32" text-anchor="end" fill="#3a3a5a" font-size="7" font-family="'Courier New', monospace">choose one · --[provider]-title</text>
+
+  <!-- NOTION top-left -->
+  <rect x="28" y="48" width="252" height="210" rx="8" fill="url(#notionG)" stroke="#3a3a6a" stroke-width="1"/>
+  <rect x="28" y="48" width="252" height="3" rx="2" fill="#c8c8e8" opacity="0.2"/>
+  <text x="154" y="73" text-anchor="middle" font-size="20">📄</text>
+  <text x="154" y="91" text-anchor="middle" fill="#c0c0e0" font-size="10" font-family="'Courier New', monospace" letter-spacing="2" font-weight="bold">NOTION</text>
+  <line x1="34" y1="98" x2="274" y2="98" stroke="#2a2a4a" stroke-width="1" opacity="0.5"/>
+  <rect x="36" y="105" width="236" height="56" rx="4" fill="#14142a" stroke="#2e2e52" stroke-width="1"/>
+  <text x="154" y="119" text-anchor="middle" fill="#7070aa" font-size="7" font-family="'Courier New', monospace" letter-spacing="1">DATABASE</text>
+  <line x1="41" y1="123" x2="266" y2="123" stroke="#20204a" stroke-width="1"/>
+  <rect x="41" y="129" width="100" height="3" rx="1" fill="#2a2a4a"/>
+  <rect x="41" y="136" width="78" height="3" rx="1" fill="#222244"/>
+  <rect x="41" y="143" width="88" height="3" rx="1" fill="#222244"/>
+  <rect x="175" y="129" width="90" height="16" rx="8" fill="#0f2a0f" stroke="#2a5a2a" stroke-width="1"/>
+  <text x="220" y="141" text-anchor="middle" fill="#5aaa5a" font-size="6.5" font-family="'Courier New', monospace">● READY</text>
+  <rect x="36" y="168" width="236" height="36" rx="4" fill="#0e0e20" stroke="#20203a" stroke-width="1"/>
+  <text x="44" y="181" fill="#4a4a7a" font-size="7" font-family="'Courier New', monospace">NOTION_API_TOKEN</text>
+  <text x="44" y="196" fill="#4a4a7a" font-size="7" font-family="'Courier New', monospace">NOTION_DATABASE_ID</text>
+  <line x1="34" y1="212" x2="274" y2="212" stroke="#2a2a4a" stroke-width="1" opacity="0.3"/>
+  <text x="154" y="226" text-anchor="middle" fill="#5a5a8a" font-size="7" font-family="'Courier New', monospace">--notion-title "..."  ·  --notion-id</text>
+  <text x="154" y="240" text-anchor="middle" fill="#3a3a5a" font-size="6.5" font-family="'Courier New', monospace">default provider · no extra auth</text>
+
+  <!-- OBSIDIAN top-right -->
+  <rect x="300" y="48" width="252" height="210" rx="8" fill="url(#obsidianG)" stroke="#5a3a9a" stroke-width="1"/>
+  <rect x="300" y="48" width="252" height="3" rx="2" fill="#9a7aff" opacity="0.25"/>
+  <text x="426" y="73" text-anchor="middle" font-size="20">🔮</text>
+  <text x="426" y="91" text-anchor="middle" fill="#aa98e0" font-size="10" font-family="'Courier New', monospace" letter-spacing="2" font-weight="bold">OBSIDIAN</text>
+  <line x1="306" y1="98" x2="546" y2="98" stroke="#3a2a6a" stroke-width="1" opacity="0.5"/>
+  <rect x="308" y="105" width="236" height="56" rx="4" fill="#110c22" stroke="#3a2a5a" stroke-width="1"/>
+  <text x="426" y="119" text-anchor="middle" fill="#6a5a9a" font-size="7" font-family="'Courier New', monospace" letter-spacing="1">LOCAL VAULT</text>
+  <line x1="313" y1="123" x2="538" y2="123" stroke="#201840" stroke-width="1"/>
+  <text x="318" y="135" fill="#584a88" font-size="7" font-family="'Courier New', monospace">📁 MyVault/</text>
+  <text x="326" y="147" fill="#4a3a78" font-size="7" font-family="'Courier New', monospace">📂 Blog Posts/</text>
+  <text x="334" y="159" fill="#3a2a68" font-size="6.5" font-family="'Courier New', monospace">📝 note.md</text>
+  <rect x="308" y="168" width="236" height="36" rx="4" fill="#0c0a1a" stroke="#201838" stroke-width="1"/>
+  <text x="316" y="181" fill="#4a3a78" font-size="7" font-family="'Courier New', monospace">OBSIDIAN_VAULT_PATH</text>
+  <text x="316" y="196" fill="#4a3a78" font-size="7" font-family="'Courier New', monospace">OBSIDIAN_NOTES_DIR  (optional)</text>
+  <line x1="306" y1="212" x2="546" y2="212" stroke="#3a2a6a" stroke-width="1" opacity="0.3"/>
+  <text x="426" y="226" text-anchor="middle" fill="#6a5a9a" font-size="7" font-family="'Courier New', monospace">--obsidian-title "..."  ·  --obsidian-id</text>
+  <text x="426" y="240" text-anchor="middle" fill="#3a2a6a" font-size="6.5" font-family="'Courier New', monospace">filesystem · no API key needed</text>
+
+  <!-- ONENOTE bottom-left -->
+  <rect x="28" y="264" width="252" height="218" rx="8" fill="url(#onenoteG)" stroke="#8a2060" stroke-width="1"/>
+  <rect x="28" y="264" width="252" height="3" rx="2" fill="#ff60cc" opacity="0.3"/>
+  <text x="154" y="289" text-anchor="middle" font-size="20">📓</text>
+  <text x="154" y="307" text-anchor="middle" fill="#ff80cc" font-size="10" font-family="'Courier New', monospace" letter-spacing="2" font-weight="bold">ONENOTE</text>
+  <line x1="34" y1="314" x2="274" y2="314" stroke="#6a1848" stroke-width="1" opacity="0.5"/>
+  <rect x="36" y="321" width="236" height="62" rx="4" fill="#1e0818" stroke="#6a1848" stroke-width="1"/>
+  <text x="154" y="335" text-anchor="middle" fill="#cc50a0" font-size="7" font-family="'Courier New', monospace" letter-spacing="1">AZURE AD APP</text>
+  <line x1="41" y1="339" x2="266" y2="339" stroke="#3a1028" stroke-width="1"/>
+  <text x="44" y="352" fill="#aa4090" font-size="7" font-family="'Courier New', monospace">App registration (portal.azure.com)</text>
+  <text x="44" y="365" fill="#8a3070" font-size="7" font-family="'Courier New', monospace">Notes.ReadWrite.All (delegated)</text>
+  <text x="44" y="377" fill="#6a2050" font-size="6.5" font-family="'Courier New', monospace">OAuth2 · tokens cached in ~/.inpost/</text>
+  <rect x="36" y="390" width="236" height="48" rx="4" fill="#160610" stroke="#4a1038" stroke-width="1"/>
+  <text x="44" y="403" fill="#aa4080" font-size="7" font-family="'Courier New', monospace">ONENOTE_CLIENT_ID</text>
+  <text x="44" y="415" fill="#aa4080" font-size="7" font-family="'Courier New', monospace">ONENOTE_CLIENT_SECRET</text>
+  <text x="44" y="427" fill="#7a2060" font-size="6.5" font-family="'Courier New', monospace">ONENOTE_TENANT_ID</text>
+  <line x1="34" y1="446" x2="274" y2="446" stroke="#6a1848" stroke-width="1" opacity="0.3"/>
+  <text x="154" y="460" text-anchor="middle" fill="#cc5090" font-size="7" font-family="'Courier New', monospace">--onenote-title "..."  ·  --onenote-id</text>
+  <text x="154" y="474" text-anchor="middle" fill="#7a2060" font-size="6.5" font-family="'Courier New', monospace">inpost auth --onenote  (one-time)</text>
+
+  <!-- EVERNOTE bottom-right -->
+  <rect x="300" y="264" width="252" height="218" rx="8" fill="url(#evernoteG)" stroke="#1a7a30" stroke-width="1"/>
+  <rect x="300" y="264" width="252" height="3" rx="2" fill="#30ee60" opacity="0.3"/>
+  <text x="426" y="289" text-anchor="middle" font-size="20">🐘</text>
+  <text x="426" y="307" text-anchor="middle" fill="#30ee60" font-size="10" font-family="'Courier New', monospace" letter-spacing="2" font-weight="bold">EVERNOTE</text>
+  <line x1="306" y1="314" x2="546" y2="314" stroke="#1a6a28" stroke-width="1" opacity="0.5"/>
+  <rect x="308" y="321" width="236" height="62" rx="4" fill="#071a0c" stroke="#1a6a28" stroke-width="1"/>
+  <text x="426" y="335" text-anchor="middle" fill="#28ee58" font-size="7" font-family="'Courier New', monospace" letter-spacing="1">DEVELOPER TOKEN</text>
+  <line x1="313" y1="339" x2="538" y2="339" stroke="#0f3a18" stroke-width="1"/>
+  <text x="316" y="352" fill="#18cc48" font-size="7" font-family="'Courier New', monospace">Personal access token (no OAuth)</text>
+  <text x="316" y="365" fill="#12a838" font-size="7" font-family="'Courier New', monospace">Thrift SDK  ·  npm install evernote</text>
+  <text x="316" y="377" fill="#0e7a28" font-size="6.5" font-family="'Courier New', monospace">evernote.com/api/DeveloperToken</text>
+  <rect x="308" y="390" width="236" height="48" rx="4" fill="#050e08" stroke="#0f4a18" stroke-width="1"/>
+  <text x="316" y="403" fill="#18cc48" font-size="7" font-family="'Courier New', monospace">EVERNOTE_TOKEN</text>
+  <text x="316" y="415" fill="#18cc48" font-size="7" font-family="'Courier New', monospace">EVERNOTE_NOTEBOOK  (optional)</text>
+  <text x="316" y="427" fill="#0e8a30" font-size="6.5" font-family="'Courier New', monospace">EVERNOTE_SANDBOX</text>
+  <line x1="306" y1="446" x2="546" y2="446" stroke="#1a6a28" stroke-width="1" opacity="0.3"/>
+  <text x="426" y="460" text-anchor="middle" fill="#28ee58" font-size="7" font-family="'Courier New', monospace">--evernote-title "..."  ·  --evernote-id</text>
+  <text x="426" y="474" text-anchor="middle" fill="#12a838" font-size="6.5" font-family="'Courier New', monospace">GUID visible in Evernote desktop</text>
+
+</svg>
