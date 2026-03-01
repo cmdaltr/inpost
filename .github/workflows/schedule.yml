@@ -4,13 +4,13 @@ on:
   # Runs every Monday.
   # GitHub Actions cron is always UTC.
   #
-  # Europe/London (GMT) in winter:  11:00 UTC = 11:00 London  ✓
-  # Europe/London (BST) in summer:  11:00 UTC = 12:00 London  (1 hour late)
+  # Europe/London (GMT) in winter:  09:30 UTC = 09:30 London
+  # Europe/London (BST) in summer:  09:30 UTC = 10:30 London  (1 hour late)
   #
-  # To hit 11:00 London all year you would need two schedules,
+  # To hit the same London time all year you would need two schedules,
   # or accept the summer offset. See docs/deployment.md for details.
   schedule:
-    - cron: '0 11 * * 1'
+    - cron: '30 9 * * 1'
 
   # Allows you to trigger the workflow manually from the Actions tab.
   # Useful for testing or catching up on a missed run.

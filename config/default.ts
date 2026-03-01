@@ -50,7 +50,7 @@ export const defaultConfig = {
     batchSize: 5,
   },
   schedule: {
-    defaultCron: '0 11 * * 1',
+    defaultCron: '30 9 * * 1',
     timezone: 'Europe/London',
   },
 } as const;
