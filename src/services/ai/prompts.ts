@@ -58,7 +58,7 @@ Rules:
 - Keep each hashtag short — prefer single words or two short words joined (e.g. #dfir, #python, #forensics, #linux, #infosec)
 - Avoid long compound words — #memoryforensics is ok, #computerforensicsinvestigation is not
 - Use lowercase for all hashtags (e.g. #digitalforensics not #DigitalForensics)
-- NEVER use any of these hashtags: #linuxforensics #ubuntu #forensicinvestigation #computeforensics
+- NEVER use any of these hashtags: #linuxforensics #ubuntu #forensicinvestigation #computeforensics #computerforensics
 - Output ONLY the hashtags separated by spaces, nothing else`,
 
     user: (content: string, tags: string[]) =>
