@@ -64,6 +64,11 @@ export function createOrchestrator(config: OrchestratorConfig): Orchestrator {
 
           let postText = transformed.summary;
 
+          // Append blog URL if set (skip Notion page URLs — they're a fallback, not a real blog link)
+          if (post.blogUrl && !post.blogUrl.includes('notion.so')) {
+            postText += '\n\n' + post.blogUrl;
+          }
+
           // Append hashtags if generated
           if (transformed.hashtags && transformed.hashtags.length > 0) {
             postText += '\n\n' + transformed.hashtags.join(' ');

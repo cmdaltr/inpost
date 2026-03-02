@@ -56,7 +56,7 @@ Generate 5 hook options.`,
 Rules:
 - Generate 5-8 hashtags
 - Mix broad hashtags (#Leadership, #Technology) with niche ones (#ContentStrategy, #APIDesign)
-- Use camelCase for multi-word hashtags
+- Use lowercase for all hashtags (e.g. #digitalforensics not #DigitalForensics)
 - Output ONLY the hashtags separated by spaces, nothing else`,
 
     user: (content: string, tags: string[]) =>
