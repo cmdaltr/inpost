@@ -1,6 +1,6 @@
 # Running the Scheduler
 
-`inpost schedule` is a long-running process. It must be running at 11:00 every Monday for posts to publish. This document covers three ways to keep it alive.
+`inpost schedule` is a long-running process. It must be running at the scheduled time every Monday for posts to publish. This document covers three ways to keep it alive.
 
 ---
 
@@ -119,7 +119,7 @@ launchctl load ~/Library/LaunchAgents/com.inpost.schedule.plist
 
 ### Notes
 
-- The Mac must be awake at 11:00 Monday. launchd cannot wake a sleeping Mac.
+- The Mac must be awake at the scheduled time on Monday. launchd cannot wake a sleeping Mac.
 - If the Mac is asleep at the scheduled time, that run is skipped entirely — node-cron does not catch up on missed runs.
 - To prevent the Mac sleeping at the critical time, set an Energy Saver schedule in **System Settings → Battery → Schedule**.
 
@@ -253,7 +253,7 @@ Add the following secrets:
 | `GROQ_API_KEY` | One of these three | Your `.env` file |
 | `DEFAULT_TONE` | No — defaults to `professional` | Your `.env` file |
 | `LOG_LEVEL` | No — defaults to `info` | Your `.env` file |
-| `SCHEDULE_CRON` | No — defaults to `0 11 * * 1` | Your `.env` file |
+| `SCHEDULE_CRON` | No — defaults to `30 9 * * 1` | Your `.env` file |
 | `SCHEDULE_TIMEZONE` | No — defaults to `Europe/London` | Your `.env` file |
 | `SCHEDULE_LIMIT` | No — defaults to `1` | Your `.env` file |
 
@@ -281,13 +281,13 @@ on:
   # Runs every Monday.
   # GitHub Actions cron is always UTC.
   #
-  # Europe/London (GMT) in winter:  11:00 UTC = 11:00 London  ✓
-  # Europe/London (BST) in summer:  11:00 UTC = 12:00 London  (1 hour late)
+  # Europe/London (GMT) in winter:  09:30 UTC = 09:30 London  ✓
+  # Europe/London (BST) in summer:  09:30 UTC = 10:30 London  (1 hour late)
   #
-  # To hit 11:00 London all year you would need two schedules,
+  # To hit 09:30 London all year you would need two schedules,
   # or accept the summer offset. See the timezone note below.
   schedule:
-    - cron: '0 11 * * 1'
+    - cron: '30 9 * * 1'
 
   # Allows you to trigger the workflow manually from the Actions tab.
   # Useful for testing or catching up on a missed run.
@@ -343,7 +343,7 @@ git push
 
 #### Step 5 — Verify the workflow appears
 
-In GitHub, go to **Actions**. You should see "Publish scheduled posts" listed. It will not run until the next Monday at 11:00 UTC.
+In GitHub, go to **Actions**. You should see "Publish scheduled posts" listed. It will not run until the next Monday at 09:30 UTC.
 
 To test it immediately without waiting: go to **Actions → Publish scheduled posts → Run workflow → Run workflow**.
 
@@ -371,12 +371,12 @@ GitHub Actions cron runs in UTC. There is no timezone option.
 
 | Season | London time | UTC equivalent |
 |---|---|---|
-| Winter (GMT, late Oct – late Mar) | 11:00 | `0 11 * * 1` |
-| Summer (BST, late Mar – late Oct) | 11:00 | `0 10 * * 1` |
+| Winter (GMT, late Oct – late Mar) | 09:30 | `30 9 * * 1` |
+| Summer (BST, late Mar – late Oct) | 09:30 | `30 8 * * 1` |
 
-The workflow above uses `0 11 * * 1` (11:00 UTC). This means:
-- In winter your post goes out at 11:00 London time — correct
-- In summer your post goes out at 12:00 London time — one hour late
+The workflow above uses `30 9 * * 1` (09:30 UTC). This means:
+- In winter your post goes out at 09:30 London time — correct
+- In summer your post goes out at 10:30 London time — one hour late
 
 If the exact time matters, you can add both schedules and use an environment variable or a conditional step to prevent double-publishing. In practice, a one-hour seasonal drift is unlikely to matter for LinkedIn posting.
 

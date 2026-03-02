@@ -37,14 +37,20 @@ export const envSchema = z
     EVERNOTE_NOTEBOOK: z.string().optional(),
     EVERNOTE_SANDBOX: z.string().default('false'),
     DEFAULT_TONE: z
-      .enum(['professional', 'casual', 'authority', 'storytelling', 'educational'])
-      .default('professional'),
+      .string()
+      .optional()
+      .transform((val) => (val === undefined || val === '' ? 'professional' : val))
+      .pipe(z.enum(['professional', 'casual', 'authority', 'storytelling', 'educational'])),
     DEFAULT_NOTEBOOK: z
-      .enum(['notion', 'onenote', 'obsidian', 'evernote'])
-      .default('notion'),
+      .string()
+      .optional()
+      .transform((val) => (val === undefined || val === '' ? 'notion' : val))
+      .pipe(z.enum(['notion', 'onenote', 'obsidian', 'evernote'])),
     PIPELINE_ORDER: z
-      .enum(['oldest', 'newest'])
-      .default('oldest'),
+      .string()
+      .optional()
+      .transform((val) => (val === undefined || val === '' ? 'oldest' : val))
+      .pipe(z.enum(['oldest', 'newest'])),
   })
   .refine((data) => data.GROQ_API_KEY || data.GEMINI_API_KEY || data.ANTHROPIC_API_KEY, {
     message: 'One of GROQ_API_KEY, GEMINI_API_KEY, or ANTHROPIC_API_KEY must be provided',

@@ -86,6 +86,7 @@ inpost schedule ?
 | `inpost publish [text]` | Publish content to LinkedIn |
 | `inpost pipeline` | Full pipeline: fetch → transform → publish |
 | `inpost fetch` | Fetch posts from Notion by status |
+| `inpost queue` | Show the next posts in the publishing queue |
 | `inpost auth` | Authenticate with LinkedIn (or OneNote) via OAuth |
 | `inpost schedule` | Run pipeline on a cron schedule |
 | `inpost status` | Check configuration and connection status |
@@ -186,6 +187,19 @@ Options:
   --notion | --obsidian | --onenote | --evernote   Provider shorthands
 ```
 
+### Queue
+
+Show the next posts in the publishing queue — Ready status, oldest first. This matches the order the pipeline will process them.
+
+```bash
+inpost queue              # next 10 (default)
+inpost queue --limit 5    # next 5
+
+Options:
+  --limit <number>      Max posts to show (default: 10)
+  --output <format>     table | json | quiet (default: table)
+```
+
 ### Schedule
 
 ```bash
@@ -255,7 +269,7 @@ LOG_LEVEL=info
 DEFAULT_NOTEBOOK=notion        # notion | onenote | obsidian | evernote
 
 # Scheduler
-SCHEDULE_CRON=0 11 * * 1       # Default: Mondays at 11am
+SCHEDULE_CRON=30 9 * * 1       # Default: Mondays at 09:30 UTC
 SCHEDULE_TIMEZONE=Europe/London
 SCHEDULE_LIMIT=1               # Max posts per scheduled run
 PIPELINE_ORDER=oldest          # oldest | newest — which ready posts to pick first

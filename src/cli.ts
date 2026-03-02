@@ -6,6 +6,7 @@ import { registerPublishCommand } from './commands/publish.js';
 import { registerPipelineCommand } from './commands/pipeline.js';
 import { registerScheduleCommand } from './commands/schedule.js';
 import { registerStatusCommand } from './commands/status.js';
+import { registerQueueCommand } from './commands/queue.js';
 
 export function createProgram(): Command {
   const program = new Command();
@@ -24,6 +25,7 @@ export function createProgram(): Command {
   registerPipelineCommand(program);
   registerScheduleCommand(program);
   registerStatusCommand(program);
+  registerQueueCommand(program);
 
   return program;
 }
