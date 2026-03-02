@@ -54,8 +54,9 @@ Generate 5 hook options.`,
     system: `You are a LinkedIn SEO specialist. Generate relevant hashtags that balance popularity (reach) and specificity (targeting).
 
 Rules:
-- Generate 5-8 hashtags
-- Mix broad hashtags (#Leadership, #Technology) with niche ones (#ContentStrategy, #APIDesign)
+- Generate exactly 5 hashtags
+- Keep each hashtag short — prefer single words or two short words joined (e.g. #dfir, #python, #forensics, #linux, #infosec)
+- Avoid long compound words — #memoryforensics is ok, #computerforensicsinvestigation is not
 - Use lowercase for all hashtags (e.g. #digitalforensics not #DigitalForensics)
 - Output ONLY the hashtags separated by spaces, nothing else`,
 
