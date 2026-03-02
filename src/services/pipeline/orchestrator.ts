@@ -44,34 +44,55 @@ export function createOrchestrator(config: OrchestratorConfig): Orchestrator {
           // 2. Update status -> Transforming
           await writer.updateStatus(post.id, 'Transforming');
 
-          // 3. AI Transform
-          console.log(chalk.dim('  Transforming with AI...'));
-          const transformOptions: TransformOptions = {
-            content: post.content,
-            tone: post.tone || config.defaultTone,
-            type: 'summary',
-            includeHooks: config.includeHooks,
-            includeHashtags: config.includeHashtags,
-            includeThread: false,
-            variantCount: 1,
-            tags: post.tags,
-          };
+          // 3. AI Transform (skip if a summary is already saved in Notion)
+          let summary: string;
+          let hashtags: string[] | undefined;
 
-          const transformed = await transformer.transform(transformOptions);
+          if (post.aiSummary) {
+            console.log(chalk.dim('  Using saved AI summary from Notion...'));
+            summary = post.aiSummary;
+            // Still generate fresh hashtags if needed
+            if (config.includeHashtags) {
+              const transformed = await transformer.transform({
+                content: post.content,
+                tone: post.tone || config.defaultTone,
+                type: 'summary',
+                includeHooks: false,
+                includeHashtags: true,
+                includeThread: false,
+                variantCount: 1,
+                tags: post.tags,
+              });
+              hashtags = transformed.hashtags;
+            }
+          } else {
+            console.log(chalk.dim('  Transforming with AI...'));
+            const transformed = await transformer.transform({
+              content: post.content,
+              tone: post.tone || config.defaultTone,
+              type: 'summary',
+              includeHooks: config.includeHooks,
+              includeHashtags: config.includeHashtags,
+              includeThread: false,
+              variantCount: 1,
+              tags: post.tags,
+            });
+            summary = transformed.summary;
+            hashtags = transformed.hashtags;
+            // Save generated summary to Notion
+            await writer.updateAISummary(post.id, summary);
+          }
 
-          // Save AI summary to Notion
-          await writer.updateAISummary(post.id, transformed.summary);
-
-          let postText = transformed.summary;
+          let postText = summary;
 
           // Append the page URL (Notion page URL, made public by user after publishing)
           if (post.blogUrl) {
-            postText += '\n\n' + post.blogUrl;
+            postText += '\n\n🔗 ' + post.blogUrl;
           }
 
           // Append hashtags if generated
-          if (transformed.hashtags && transformed.hashtags.length > 0) {
-            postText += '\n\n' + transformed.hashtags.join(' ');
+          if (hashtags && hashtags.length > 0) {
+            postText += '\n\n' + hashtags.join(' ');
           }
 
           // 4. Show preview and optionally confirm
