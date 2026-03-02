@@ -2,6 +2,7 @@ import type { AIClient } from './client.js';
 import { createAIClientFromEnv, type AIProviderConfig } from './provider.js';
 import { PROMPTS } from './prompts.js';
 import { generateHooks } from './hooks.js';
+import { generateHashtags } from './hashtags.js';
 import { createThread } from './threading.js';
 import { createChildLogger } from '../../utils/logger.js';
 import type { TransformOptions, TransformResult } from '../../types/index.js';
@@ -32,33 +33,20 @@ export function createTransformer(env: AIProviderConfig): Transformer {
         'Starting content transformation',
       );
 
-      // Generate the main summary (with hashtags if requested)
+      // Generate the main summary (never ask for hashtags inline — they are generated separately)
       const summaryResponse = await client.complete(
         PROMPTS.SUMMARIZE.system,
         PROMPTS.SUMMARIZE.user(
           options.content,
           options.tone,
-          options.includeHashtags,
+          false,
           options.tags || [],
         ),
       );
       totalTokens += summaryResponse.tokensUsed;
 
-      // Parse hashtags from response if included
-      let summaryText = summaryResponse.text;
+      const summaryText = summaryResponse.text;
       let hashtags: string[] | undefined;
-
-      if (options.includeHashtags) {
-        // Split response into summary and hashtags
-        const hashtagMatch = summaryText.match(/(#\w+[\s]*)+$/);
-        if (hashtagMatch) {
-          const hashtagsStr = hashtagMatch[0];
-          summaryText = summaryText.slice(0, -hashtagsStr.length).trim();
-          hashtags = hashtagsStr
-            .split(/\s+/)
-            .filter((tag) => tag.startsWith('#') && tag.length > 1);
-        }
-      }
 
       const result: TransformResult = {
         summary: summaryText,
@@ -72,6 +60,14 @@ export function createTransformer(env: AIProviderConfig): Transformer {
 
       // Run independent AI tasks in parallel
       const parallelTasks: Promise<void>[] = [];
+
+      if (options.includeHashtags) {
+        parallelTasks.push(
+          generateHashtags(client, options.content, options.tags || []).then((tags) => {
+            result.hashtags = tags;
+          }),
+        );
+      }
 
       if (options.includeHooks) {
         parallelTasks.push(
