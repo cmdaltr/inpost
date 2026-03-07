@@ -10,7 +10,7 @@ on:
   # To hit the same London time all year you would need two schedules,
   # or accept the summer offset. See docs/deployment.md for details.
   schedule:
-    - cron: '30 9 * * 1'
+    - cron: '0 8 * * 3'
 
   # Allows you to trigger the workflow manually from the Actions tab.
   # Useful for testing or catching up on a missed run.
