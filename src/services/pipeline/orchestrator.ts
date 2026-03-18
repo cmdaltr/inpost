@@ -4,8 +4,11 @@ import { createNotionReader } from '../notion/reader.js';
 import { createNotionWriter } from '../notion/writer.js';
 import { createTransformer } from '../ai/transformer.js';
 import { createLinkedInPublisher } from '../linkedin/publisher.js';
+import { createAIClientFromEnv } from '../ai/provider.js';
+import { generateHashtags } from '../ai/hashtags.js';
+import { validatePostLength } from '../../utils/validation.js';
 import { createChildLogger } from '../../utils/logger.js';
-import type { PipelineResult, TransformOptions } from '../../types/index.js';
+import type { PipelineResult } from '../../types/index.js';
 import type { OrchestratorConfig } from './types.js';
 
 const log = createChildLogger('pipeline:orchestrator');
@@ -45,26 +48,11 @@ export function createOrchestrator(config: OrchestratorConfig): Orchestrator {
           await writer.updateStatus(post.id, 'Transforming');
 
           // 3. AI Transform (skip if a summary is already saved in Notion)
-          let summary: string;
-          let hashtags: string[] | undefined;
+          let text: string;
 
           if (post.aiSummary) {
             console.log(chalk.dim('  Using saved AI summary from Notion...'));
-            summary = post.aiSummary;
-            // Still generate fresh hashtags if needed
-            if (config.includeHashtags) {
-              const transformed = await transformer.transform({
-                content: post.content,
-                tone: post.tone || config.defaultTone,
-                type: 'summary',
-                includeHooks: false,
-                includeHashtags: true,
-                includeThread: false,
-                variantCount: 1,
-                tags: post.tags,
-              });
-              hashtags = transformed.hashtags;
-            }
+            text = post.aiSummary;
           } else {
             console.log(chalk.dim('  Transforming with AI...'));
             const transformed = await transformer.transform({
@@ -72,28 +60,53 @@ export function createOrchestrator(config: OrchestratorConfig): Orchestrator {
               tone: post.tone || config.defaultTone,
               type: 'summary',
               includeHooks: config.includeHooks,
-              includeHashtags: config.includeHashtags,
+              includeHashtags: false,
               includeThread: false,
               variantCount: 1,
               tags: post.tags,
             });
-            summary = transformed.summary;
-            hashtags = transformed.hashtags;
+            text = transformed.summary;
             // Save generated summary to Notion
-            await writer.updateAISummary(post.id, summary);
+            await writer.updateAISummary(post.id, text);
           }
 
-          let postText = summary;
+          // From here, follow the exact same logic as the publish command:
 
-          // Append the page URL (Notion page URL, made public by user after publishing)
+          // Check if text already has hashtags (from AI Summary)
+          const hashtagMatch = text.match(/(\n\n)(#\w+[\s#\w]*)\s*$/);
+          let existingHashtags = '';
+          if (hashtagMatch) {
+            existingHashtags = hashtagMatch[2];
+            text = text.slice(0, hashtagMatch.index);
+          }
+
+          // Append blog link
           if (post.blogUrl) {
-            postText += '\n\n🔗 ' + post.blogUrl;
+            text = `${text}\n\n🔗 ${post.blogUrl}`;
           }
 
-          // Append hashtags if generated
-          if (hashtags && hashtags.length > 0) {
-            postText += '\n\n' + hashtags.join(' ');
+          // Add hashtags at the end
+          if (config.includeHashtags) {
+            if (existingHashtags) {
+              text = `${text}\n\n${existingHashtags}`;
+            } else {
+              const { client } = createAIClientFromEnv(config.aiConfig);
+              const hashtags = await generateHashtags(client, text, post.tags || []);
+              if (hashtags.length > 0) {
+                text = `${text}\n\n${hashtags.join(' ')}`;
+              }
+            }
           }
+
+          // Validate length
+          const validation = validatePostLength(text);
+          if (!validation.valid) {
+            throw new Error(
+              `Post exceeds LinkedIn character limit (${validation.length}/${validation.maxLength})`,
+            );
+          }
+
+          const postText = text;
 
           // 4. Show preview and optionally confirm
           console.log(chalk.dim('\n  --- Preview ---'));

@@ -51,7 +51,8 @@ export function createLinkedInClient(): LinkedInClient {
         isReshareDisabledByAuthor: false,
       };
 
-      log.info({ visibility }, 'Creating LinkedIn post');
+      log.info({ visibility, commentaryLength: text.length }, 'Creating LinkedIn post');
+      log.debug({ commentary: text }, 'Full post text being sent');
 
       await linkedInLimiter.acquire();
 

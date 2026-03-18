@@ -151,6 +151,9 @@ export function registerPublishCommand(program: Command): void {
         // Use AI Summary if available, otherwise use raw content
         if (post.aiSummary) {
           text = post.aiSummary;
+          console.log(chalk.dim(`AI Summary from Notion (${text.length} chars):`));
+          console.log(chalk.dim(text));
+          console.log();
         } else {
           console.error(
             chalk.yellow(
@@ -219,9 +222,16 @@ export function registerPublishCommand(program: Command): void {
         return;
       }
 
+      // Always show the full post text before publishing
+      console.log(chalk.bold('\nFull post text being sent:\n'));
+      console.log(chalk.dim('--- START ---'));
+      console.log(text);
+      console.log(chalk.dim('--- END ---'));
+      console.log(chalk.dim(`(${text.length} characters)\n`));
+
       const publisher = createLinkedInPublisher();
 
-      console.log(chalk.dim('\nPublishing to LinkedIn...\n'));
+      console.log(chalk.dim('Publishing to LinkedIn...\n'));
 
       const result = await publisher.publish({
         text,
