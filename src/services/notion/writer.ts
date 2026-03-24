@@ -6,6 +6,16 @@ import { createChildLogger } from '../../utils/logger.js';
 
 const log = createChildLogger('notion:writer');
 
+const NOTION_RICH_TEXT_LIMIT = 2000;
+
+function splitRichText(text: string): { text: { content: string } }[] {
+  const chunks: { text: { content: string } }[] = [];
+  for (let i = 0; i < text.length; i += NOTION_RICH_TEXT_LIMIT) {
+    chunks.push({ text: { content: text.slice(i, i + NOTION_RICH_TEXT_LIMIT) } });
+  }
+  return chunks.length > 0 ? chunks : [{ text: { content: '' } }];
+}
+
 export interface NotionWriter {
   updateStatus(pageId: string, status: string): Promise<void>;
   markPublished(
@@ -84,7 +94,7 @@ export function createNotionWriter(token: string): NotionWriter {
       log.info({ pageId }, 'Updating AI summary');
       await updateProperties(pageId, {
         [cfg.aiSummaryProperty]: {
-          rich_text: [{ text: { content: summary.slice(0, 2000) } }],
+          rich_text: splitRichText(summary),
         },
       });
     },
@@ -93,7 +103,7 @@ export function createNotionWriter(token: string): NotionWriter {
       log.info({ pageId }, 'Updating variants');
       await updateProperties(pageId, {
         [cfg.variantsProperty]: {
-          rich_text: [{ text: { content: variants.slice(0, 2000) } }],
+          rich_text: splitRichText(variants),
         },
       });
     },
