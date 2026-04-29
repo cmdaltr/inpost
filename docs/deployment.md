@@ -12,7 +12,7 @@ InPost is designed to be self-hosted. The workflow file and code are generic —
 
 1. **Fork or clone the repository** to their own GitHub account
 2. **Set up Notion** — follow `docs/notion-setup.md` to create their own InPost database and integration
-3. **Set up LinkedIn** — follow `docs/linkedin-setup.md` and run `inpost auth` locally to generate credentials
+3. **Set up LinkedIn** — follow `docs/linkedin-setup.md` and run `inpost auth linkedin` locally to generate credentials
 4. **Add their own secrets** — under Settings → Secrets on their fork, using their own API keys and credentials
 5. **Enable Actions** — GitHub sometimes disables Actions on forks by default; enable under **Settings → Actions → Allow all actions**
 
@@ -202,7 +202,7 @@ If you exceed the free tier, additional minutes are billed at $0.008 per minute 
 ### Prerequisites
 
 - The InPost repository must be on GitHub (public or private)
-- You must have already run `inpost auth` locally at least once — this creates `~/.inpost/credentials.json`
+- You must have already run `inpost auth linkedin` locally at least once — this creates `~/.inpost/credentials.json`
 
 ---
 
@@ -221,21 +221,25 @@ The `credentials.json` file looks like this:
 }
 ```
 
-**LinkedIn access tokens expire after approximately 60 days.** There is no refresh token. When a token expires, you must re-run `inpost auth` locally and update the GitHub secret with the new credentials. If you forget, the workflow will fail with an authentication error and no posts will be published.
+**LinkedIn access tokens expire after approximately 60 days.** There is no refresh token. When a token expires, you must re-run `inpost auth linkedin` locally. This automatically updates the `LINKEDIN_CREDENTIALS` GitHub secret. If you forget, the workflow will fail with an authentication error, and GitHub will send you a failure email.
 
 ---
 
 ### Setup
 
-#### Step 1 — Copy your LinkedIn credentials
+#### Step 1 — Authenticate with LinkedIn
 
-On your local machine, after running `inpost auth`:
+On your local machine:
+
+```bash
+inpost auth linkedin
+```
+
+This opens a browser OAuth flow, stores credentials in `~/.inpost/credentials.json`, and automatically sets the `LINKEDIN_CREDENTIALS` GitHub secret if the `gh` CLI is installed. If `gh` is not installed, copy the credentials manually:
 
 ```bash
 cat ~/.inpost/credentials.json
 ```
-
-Copy the entire JSON output. You will paste this as a secret in the next step.
 
 #### Step 2 — Add secrets to GitHub
 
@@ -331,6 +335,11 @@ jobs:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           DEFAULT_TONE: ${{ secrets.DEFAULT_TONE }}
           LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "::error::InPost pipeline failed — check logs above for details (e.g. expired LinkedIn token, Notion error)."
 ```
 
 #### Step 4 — Commit and push
@@ -355,8 +364,9 @@ To test it immediately without waiting: go to **Actions → Publish scheduled po
 Go to **Actions → Publish scheduled posts** — each run shows as a pass or fail with full logs.
 
 **If a run fails:**
-The most likely causes are:
-1. LinkedIn token expired — re-run `inpost auth` locally, copy the new `credentials.json`, and update the `LINKEDIN_CREDENTIALS` secret
+The pipeline exits with a non-zero code on any error, so GitHub will mark the job as failed and send you a failure email automatically. The most likely causes are:
+
+1. LinkedIn token expired — run `npm run ship -- "your message" --auth` to re-authenticate and push in one step
 2. No posts with Status = Ready — not an error, just nothing to do
 3. API rate limit or network error — usually self-resolving; re-trigger manually if needed
 
@@ -386,16 +396,16 @@ If the exact time matters, you can add both schedules and use an environment var
 
 LinkedIn access tokens last approximately 60 days. There is no automatic refresh.
 
-When a token expires the workflow will fail with an authentication error. To renew:
+When a token expires the workflow will fail and GitHub will email you. To renew and redeploy in one command:
 
 ```bash
-# Re-authenticate locally
-inpost auth
-
-# Copy the new credentials
-cat ~/.inpost/credentials.json
+npm run ship -- "your commit message" --auth
 ```
 
-Then update the `LINKEDIN_CREDENTIALS` secret in GitHub with the new JSON.
+This will:
+1. Build the project
+2. Open a browser for LinkedIn OAuth
+3. Automatically update the `LINKEDIN_CREDENTIALS` GitHub secret
+4. Commit and push your code changes
 
 Set a reminder in your calendar for every 50 days to stay ahead of expiry.

@@ -117,12 +117,12 @@ export function registerStatusCommand(program: Command): void {
       check(
         'LinkedIn Client ID',
         hasClientId,
-        hasClientId ? 'Configured' : 'Missing (run: inpost auth)',
+        hasClientId ? 'Configured' : 'Missing (run: inpost auth linkedin)',
       );
       check(
         'LinkedIn Client Secret',
         hasClientSecret,
-        hasClientSecret ? 'Configured' : 'Missing (run: inpost auth)',
+        hasClientSecret ? 'Configured' : 'Missing (run: inpost auth linkedin)',
       );
 
       // LinkedIn tokens
@@ -139,14 +139,14 @@ export function registerStatusCommand(program: Command): void {
           tokenOk,
           tokenOk
             ? `Valid (expires in ${daysLeft} days)`
-            : 'Expired (run: inpost auth)',
+            : 'Expired (run: inpost auth linkedin)',
         );
         check('LinkedIn Person URN', Boolean(creds.personUrn), creds.personUrn || 'Missing');
       } else {
         check(
           'LinkedIn Token',
           false,
-          'Not authenticated (run: inpost auth)',
+          'Not authenticated (run: inpost auth linkedin)',
         );
       }
 

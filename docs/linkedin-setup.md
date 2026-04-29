@@ -40,7 +40,7 @@ Approval for "Share on LinkedIn" may require review. For personal/testing use, i
 Run the auth command:
 
 ```bash
-inpost auth
+inpost auth linkedin
 ```
 
 This will:
@@ -48,12 +48,13 @@ This will:
 2. Open your browser to LinkedIn's authorization page
 3. After you grant access, exchange the code for an access token
 4. Store credentials securely in `~/.inpost/credentials.json`
+5. Automatically update the `LINKEDIN_CREDENTIALS` GitHub Actions secret (requires `gh` CLI to be installed and authenticated)
 
 ## 5. Token Expiry
 
 - LinkedIn access tokens expire after **60 days**
 - InPost stores the expiry date and warns you via `inpost status`
-- When the token expires, re-run `inpost auth`
+- When the token expires, re-run `inpost auth linkedin`
 - Standard LinkedIn apps do not support automatic token refresh
 
 ## 6. Verify Your Setup
@@ -85,5 +86,5 @@ inpost publish "Hello from InPost!" --dry-run
 - The URL must match exactly (including port and path)
 
 **Token expired**
-- Run `inpost auth` again to get a new token
+- Run `inpost auth linkedin` again to get a new token
 - Tokens last 60 days from issuance

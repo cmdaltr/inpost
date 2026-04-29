@@ -1,5 +1,7 @@
 import http from 'node:http';
 import crypto from 'node:crypto';
+import fs from 'node:fs';
+import { execSync } from 'node:child_process';
 import chalk from 'chalk';
 import open from 'open';
 import { defaultConfig } from '../../../config/default.js';
@@ -57,6 +59,26 @@ async function fetchPersonUrn(accessToken: string): Promise<string> {
 
   const data = (await response.json()) as { sub: string };
   return `urn:li:person:${data.sub}`;
+}
+
+function pushGitHubSecret(credentialsPath: string): void {
+  try {
+    execSync('gh --version', { stdio: 'ignore' });
+  } catch {
+    console.log(chalk.yellow('  GitHub CLI (gh) not found — skipping automatic secret update.'));
+    console.log(chalk.yellow(`  Update LINKEDIN_CREDENTIALS manually with the contents of ${credentialsPath}`));
+    return;
+  }
+
+  try {
+    const contents = fs.readFileSync(credentialsPath, 'utf-8');
+    execSync('gh secret set LINKEDIN_CREDENTIALS --body -', { input: contents, stdio: ['pipe', 'pipe', 'pipe'] });
+    console.log(chalk.green('  GitHub secret LINKEDIN_CREDENTIALS updated automatically.'));
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.log(chalk.yellow(`  Could not update GitHub secret automatically: ${message}`));
+    console.log(chalk.yellow(`  Update LINKEDIN_CREDENTIALS manually with the contents of ${credentialsPath}`));
+  }
 }
 
 export async function startOAuthFlow(port: number): Promise<void> {
@@ -157,6 +179,10 @@ export async function startOAuthFlow(port: number): Promise<void> {
         console.log(`  Person URN:  ${personUrn}`);
         console.log(`  Token valid: ${daysUntilExpiry} days`);
         console.log(`  Expires at:  ${expiresAt}\n`);
+
+        console.log(chalk.dim('Syncing credentials to GitHub Actions secret...'));
+        const { getCredentialsPath } = await import('./token-store.js');
+        pushGitHubSecret(getCredentialsPath());
 
         server.close();
         resolve();

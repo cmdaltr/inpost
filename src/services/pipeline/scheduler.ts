@@ -19,7 +19,7 @@ export async function startScheduler(config: SchedulerConfig): Promise<void> {
     order: config.order,
   });
 
-  async function runPipeline() {
+  async function runPipeline(): Promise<{ published: number; errors: number }> {
     const timestamp = new Date().toISOString();
     log.info({ timestamp }, 'Scheduled pipeline run starting');
     console.log(chalk.dim(`\n[${timestamp}] Running scheduled pipeline...`));
@@ -33,14 +33,19 @@ export async function startScheduler(config: SchedulerConfig): Promise<void> {
           `[${timestamp}] Complete: ${published} published, ${errors} errors`,
         ),
       );
+      return { published, errors };
     } catch (error) {
       log.error({ error }, 'Scheduled pipeline run failed');
       console.error(chalk.red(`Pipeline run failed: ${error}`));
+      return { published: 0, errors: 1 };
     }
   }
 
   if (config.runOnce) {
-    await runPipeline();
+    const { errors } = await runPipeline();
+    if (errors > 0) {
+      process.exit(1);
+    }
     return;
   }
 

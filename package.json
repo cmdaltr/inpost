@@ -8,6 +8,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "ship": "bash ship.sh",
     "dev": "tsx src/index.ts",
     "start": "node dist/src/index.js",
     "test": "vitest run",

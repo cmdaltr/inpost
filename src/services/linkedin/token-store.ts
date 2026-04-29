@@ -17,7 +17,7 @@ function getCredentialsDir(): string {
   return path.join(os.homedir(), '.inpost');
 }
 
-function getCredentialsPath(): string {
+export function getCredentialsPath(): string {
   return path.join(getCredentialsDir(), 'credentials.json');
 }
 

@@ -45,7 +45,7 @@ jobs:
           chmod 600 ~/.inpost/credentials.json
 
       - name: Run pipeline
-        run: node dist/src/index.js schedule --once
+        run: node dist/src/index.js schedule --once 2>&1 | tee /tmp/pipeline-output.txt; exit ${PIPESTATUS[0]}
         env:
           NOTION_API_TOKEN: ${{ secrets.NOTION_API_TOKEN }}
           NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
@@ -54,3 +54,20 @@ jobs:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           DEFAULT_TONE: ${{ secrets.DEFAULT_TONE }}
           LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          OUTPUT=$(cat /tmp/pipeline-output.txt 2>/dev/null || echo "")
+
+          if echo "$OUTPUT" | grep -q "LINKEDIN_AUTH_ERROR\|token has expired"; then
+            CAUSE="LinkedIn token has expired — run: npm run ship -- \"chore: re-auth\" --auth"
+          elif echo "$OUTPUT" | grep -q "NOTION\|notion.*error\|Notion.*failed"; then
+            CAUSE="Notion API error — check NOTION_API_TOKEN and NOTION_DATABASE_ID secrets"
+          elif echo "$OUTPUT" | grep -q "AI\|anthropic\|groq\|gemini"; then
+            CAUSE="AI provider error — check your API key secret (ANTHROPIC_API_KEY / GROQ_API_KEY / GEMINI_API_KEY)"
+          else
+            CAUSE="Unknown error — check the full run logs"
+          fi
+
+          echo "::error::InPost pipeline failed. Likely cause: $CAUSE"
