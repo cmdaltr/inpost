@@ -1,19 +1,13 @@
 name: Publish scheduled posts
 
 on:
-  # Runs every Tuesday.
-  # GitHub Actions cron is always UTC.
-  #
-  # Europe/London (GMT) in winter:  09:30 UTC = 09:30 London
-  # Europe/London (BST) in summer:  09:30 UTC = 10:30 London  (1 hour late)
-  #
-  # To hit the same London time all year you would need two schedules,
-  #   or accept the summer offset. See docs/deployment.md for details.
+  # Runs every Monday at 11:00 UTC.
+  # Europe/London (GMT) in winter:  11:00 UTC = 11:00 London  ✓
+  # Europe/London (BST) in summer:  11:00 UTC = 12:00 London  (1 hour late)
   schedule:
-    - cron: '0 7 * * 2'
+    - cron: '0 11 * * 1'
 
-  # Allows you to trigger the workflow manually from the Actions tab.
-  # Useful for testing or catching up on a missed run.
+  # Trigger manually from the Actions tab — useful for testing.
   workflow_dispatch:
 
 jobs:
@@ -37,15 +31,13 @@ jobs:
         run: npm run build
 
       - name: Restore LinkedIn credentials
-        # Writes the credentials JSON to the path InPost expects.
-        # See docs/deployment.md for how to obtain and refresh this secret.
         run: |
           mkdir -p ~/.inpost
           echo '${{ secrets.LINKEDIN_CREDENTIALS }}' > ~/.inpost/credentials.json
           chmod 600 ~/.inpost/credentials.json
 
       - name: Run pipeline
-        run: node dist/src/index.js schedule --once 2>&1 | tee /tmp/pipeline-output.txt; exit ${PIPESTATUS[0]}
+        run: node dist/src/index.js schedule --once
         env:
           NOTION_API_TOKEN: ${{ secrets.NOTION_API_TOKEN }}
           NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
@@ -55,19 +47,15 @@ jobs:
           DEFAULT_TONE: ${{ secrets.DEFAULT_TONE }}
           LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
 
-      - name: Notify on failure
-        if: failure()
+      - name: Notify n8n to move published pages
+        # Fires after a successful publish run.
+        # n8n queries Blog DB for Status=Published and moves matching pages
+        # to @cmdaltr Blog. If n8n is unreachable the publish run is still
+        # considered a success — the move can be triggered manually.
+        if: success()
         run: |
-          OUTPUT=$(cat /tmp/pipeline-output.txt 2>/dev/null || echo "")
-
-          if echo "$OUTPUT" | grep -q "LINKEDIN_AUTH_ERROR\|token has expired"; then
-            CAUSE="LinkedIn token has expired — run: npm run ship -- \"chore: re-auth\" --auth"
-          elif echo "$OUTPUT" | grep -q "NOTION\|notion.*error\|Notion.*failed"; then
-            CAUSE="Notion API error — check NOTION_API_TOKEN and NOTION_DATABASE_ID secrets"
-          elif echo "$OUTPUT" | grep -q "AI\|anthropic\|groq\|gemini"; then
-            CAUSE="AI provider error — check your API key secret (ANTHROPIC_API_KEY / GROQ_API_KEY / GEMINI_API_KEY)"
-          else
-            CAUSE="Unknown error — check the full run logs"
-          fi
-
-          echo "::error::InPost pipeline failed. Likely cause: $CAUSE"
+          curl -sf --max-time 10 -X POST "${{ secrets.N8N_WEBHOOK_URL }}" \
+            -H "Content-Type: application/json" \
+            -d '{"source": "github-actions", "status": "published"}' \
+            && echo "n8n notified successfully" \
+            || echo "Warning: n8n webhook call failed — move pages manually if needed"
