@@ -1,0 +1,23 @@
+{
+  "python.defaultInterpreterPath": "/Users/ben/OneDrive/Projects/GitHub/inpost/.venv/bin/python3",
+  "python.formatting.provider": "black",
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.formatOnSave": true
+  },
+  "restoreTerminals.artificialDelayMilliseconds": 1500,
+  "restoreTerminals.terminals": [
+    {
+      "splitTerminals": [
+        {
+          "name": "Project Root",
+          "commands": ["cd ~/OneDrive/Projects/GitHub/inpost && source .venv/bin/activate"]
+        },
+        {
+          "name": "Claude Code",
+          "commands": ["cd ~/OneDrive/Projects/GitHub/inpost && deactivate 2>/dev/null; brew upgrade claude-code 2>&1 | tail -1 && clear && sleep 1 && claude --resume"]
+        }
+      ]
+    }
+  ]
+}

@@ -5,7 +5,8 @@ on:
   # Europe/London (GMT) in winter:  11:00 UTC = 11:00 London  ✓
   # Europe/London (BST) in summer:  11:00 UTC = 12:00 London  (1 hour late)
   schedule:
-    - cron: '0 11 * * 1'
+    - cron: '0 0 29 2 1'
+#    - cron: '0 8 * * 2'
 
   # Trigger manually from the Actions tab — useful for testing.
   workflow_dispatch:
